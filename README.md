@@ -10,31 +10,43 @@ client-server communication is carried out using UDP.
 
 # requirements
 ## client
-- this
-- that
+- implement an in-memory cache for read service, and do not call server if the exact parameter has been called before.
+- specify cache TTL on start
+- implement calls to the 3 services
+- implement at-least once and at-most once semantics
 
  ## server
-- this
-- that
+- Service 1: read a file by the following parameters: file name, offset, and number of bytes to read.
+- Service 2: insert byte(s) into a file by the following parameters: file name, offset, and byte stream to insert.
+- Service 3: allow client to regsiter for update for a file by passing in the filename and duration of subscription.
 
 ## report
-- this
-- that
+- design request and response format
+- 
 
 # milestones
 **DEADLINE October 23, 2023 (Monday)**
 
-## stage
-- [x] Oracle (ZY)
-- [ ] MySQL
-- [ ] Microsoft SQL Server
+## stage 1: MVP 01/10/2023
+- [ ] Client to Server local connectivity (JW)
+- [ ] Implement Service 1 with external library (ZY)
+- [ ] Implement Service 2 with external library (ZY)
+- [ ] Implement Service 3 with external library (JW)
+- [ ] Implement client call to service 1 (ZH)
+- [ ] Implement client call to service 2 (ZH)
+- [ ] Implement client call to service 3 (ZH)
+- [ ] Implement client side cache (ZH)
 
-## stage
-- [ ] Oracle
-- [ ] MySQL
-- [ ] Microsoft SQL Server
+## stage 2: Implementation 08/10/2023
+- [ ] Implement Service 1 without external library
+- [ ] Implement Service 2 without external library
+- [ ] Implement Service 3 without external library
+- [ ] Finalize request and response format
+- [ ] Implement at-least-once semantics
+- [ ] Implement at-most-once semantics
+- [ ] Client to Server remote connectivity
 
-## stage
+## stage 3: Final Product 15/10/2023
 - [ ] Oracle
 - [ ] MySQL
 - [ ] Microsoft SQL Server
