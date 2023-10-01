@@ -6,20 +6,23 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 
 public class server {
+
+    static final Integer PORT = 1234;
+    static final Integer BUFFER_SIZE = 65535;
+
+
     public static void main(String[] args) throws IOException {
         try {
             // Step 1 : Create a socket to listen at port 1234
-            DatagramSocket ds = new DatagramSocket(1234);
-            byte[] receive = new byte[65535];
+            DatagramSocket ds = new DatagramSocket(PORT);
+            byte[] receive = new byte[BUFFER_SIZE];
 
-            DatagramPacket DpReceive = null;
+            DatagramPacket dpReceive = null;
             while (true) {
 
-                // Step 2 : create a DatgramPacket to receive the data.
-                DpReceive = new DatagramPacket(receive, receive.length);
-
-                // Step 3 : revieve the data in byte buffer.
-                ds.receive(DpReceive);
+                // parse received packet
+                dpReceive = new DatagramPacket(receive, BUFFER_SIZE);
+                ds.receive(dpReceive);
 
                 System.out.println("Client:-" + data(receive));
 
@@ -29,7 +32,7 @@ public class server {
                 }
 
                 // Clear the buffer after every message.
-                receive = new byte[65535];
+                receive = new byte[BUFFER_SIZE];
             }
 
             System.out.println("Shutting down server");

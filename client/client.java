@@ -1,5 +1,6 @@
 package client;// Java program to illustrate Client side
 // Implementation using DatagramSocket
+// src: https://www.geeksforgeeks.org/working-udp-datagramsockets-java/
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -8,7 +9,7 @@ import java.net.InetAddress;
 import java.util.Scanner;
 
 public class client {
-    public static void main(String args[]) throws IOException {
+    public static void main(String[] args) throws IOException {
         Scanner sc = new Scanner(System.in);
 
         // Step 1:Create the socket object for
@@ -16,7 +17,7 @@ public class client {
         DatagramSocket ds = new DatagramSocket();
 
         InetAddress ip = InetAddress.getLocalHost();
-        byte buf[] = null;
+        byte[] buf = null;
 
         // loop while user not enters "bye"
         while (true) {
