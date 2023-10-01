@@ -1,3 +1,5 @@
+package client;
+
 import java.io.*;
 
 public class client {
