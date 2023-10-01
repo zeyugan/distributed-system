@@ -1,9 +1,9 @@
-package server;
+package server;// Java program to illustrate Server side
+// Implementation using DatagramSocket
 
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.util.Scanner;
 
 public class server {
     public static void main(String[] args) throws IOException {
@@ -12,18 +12,8 @@ public class server {
             DatagramSocket ds = new DatagramSocket(1234);
             byte[] receive = new byte[65535];
 
-            Scanner consoleSc = new Scanner(System.in);
-
             DatagramPacket DpReceive = null;
-
             while (true) {
-                String inp = consoleSc.nextLine();
-                // if user input exit, close the server
-                if (inp.equals("exit")) {
-                    System.out.println("Server closed");
-                    ds.close();
-                    break;
-                }
 
                 // Step 2 : create a DatgramPacket to receive the data.
                 DpReceive = new DatagramPacket(receive, receive.length);
@@ -33,22 +23,24 @@ public class server {
 
                 System.out.println("Client:-" + data(receive));
 
+                // Exit the server if the client sends "bye"
+                if (data(receive).toString().equals("exit")) {
+                    break;
+                }
+
                 // Clear the buffer after every message.
                 receive = new byte[65535];
-
-                System.out.println("Server is running...");
             }
+
+            System.out.println("Shutting down server");
+            ds.close();
+            System.exit(0);
+
         } catch (Exception e) {
-            System.out.println("Server closed unexpectedly.");
-            // print error message
-            System.out.println(e.getMessage());
-            // print stack trace
+            System.out.println("Server Crashed");
             e.printStackTrace();
             System.exit(1);
         }
-        // print close success
-        System.out.println("Server closed successfully.");
-        System.exit(0);
     }
 
     // A utility method to convert the byte array
