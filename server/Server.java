@@ -30,6 +30,12 @@ public class Server {
                 if (data(receive).toString().equals("exit")) {
                     break;
                 }
+                else{
+                    // invoke service
+                    String response = invokeService(data(receive).toString());
+                    System.out.println("Server:-" + response);
+                    // TODO send to client
+                }
 
                 // Clear the buffer after every message.
                 receive = new byte[BUFFER_SIZE];
@@ -59,5 +65,18 @@ public class Server {
             i++;
         }
         return ret;
+    }
+
+    // invoke service method based on the first 4 digits of the query
+    public static String invokeService(String query) throws IOException {
+        String command = query.substring(0, 4);
+        switch (command) {
+            case "READ":
+                return Service.readFile(query);
+            case "WRIT":
+                return Service.writeFile(query);
+            default:
+                return "Invalid command";
+        }
     }
 }

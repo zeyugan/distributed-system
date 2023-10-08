@@ -16,6 +16,9 @@ public class Service {
      */
     public static String readFile(String query) throws IOException {
 
+        // print current working directory
+        System.out.println("Current working directory: " + System.getProperty("user.dir"));
+
         // parse offset
         int offset = Integer.parseInt(query.substring(4, 12));
         // parse length
@@ -25,7 +28,7 @@ public class Service {
 
         // read the file
         // Open the file in read-only mode
-        RandomAccessFile file = new RandomAccessFile("/storage"+filePath, "r");
+        RandomAccessFile file = new RandomAccessFile("./server/storage"+filePath, "r");
         file.seek(offset);
         byte[] buffer = new byte[length];
         file.read(buffer);
@@ -49,7 +52,7 @@ public class Service {
      *              in the query
      * @return true if write is successful, false otherwise
      */
-    public static boolean writeFile(String query) throws IOException {
+    public static String writeFile(String query) throws IOException {
         try {
             // parse offset
             int offset = Integer.parseInt(query.substring(4, 12));
@@ -71,10 +74,10 @@ public class Service {
         }
         catch (Exception e) {
             e.printStackTrace();
-            return false;
+            return "1";
         }
 
         // Convert the byte array to a string
-        return true;
+        return "0";
     }
 }
