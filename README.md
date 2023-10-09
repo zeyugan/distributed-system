@@ -97,7 +97,7 @@ network byte order -> system local byte order ntohl
 ### Quick Start
 Client has been complied to a executable, you can simply run it:
 ```shell
-./client/client
+./client/client_macos
 ```
 
 ### Optional Command Line Arguments
@@ -107,7 +107,7 @@ You can initalize the client with command line arguments below:
 |----------|-----------------------------|---------------|
 | `debug`  | Whether show debug message  | `true`
 | `ip`     | IP address of server        | `10.0.0.2`
-| `port`   | Port of server              | `12345`
+| `p`      | Port of server              | `12345`
 | `type`   | Request type                | `idempotence`
 | `t`      | Freshness interval of cache | `30`(second)
 
@@ -115,7 +115,7 @@ You can initalize the client with command line arguments below:
 Here is a example:
 ```shell
 # This command allows you to customize the server info
-./client/client -ip 192.168.1.1 -p 6666
+./client/client_macos -ip 192.168.1.1 -p 6666
 ```
 
 Note: if you set `type` to any other value expect `idempotence`, the request will not be idempotent. For example:
