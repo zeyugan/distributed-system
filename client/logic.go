@@ -53,7 +53,7 @@ func readContent(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnes
 		// check file existance
 		if respCode != 0 {
 			fmt.Println()
-			fmt.Println("File %v doesn't exist", content)
+			fmt.Printf("File %v doesn't exist\n", content)
 			fmt.Scanln()
 			return
 
@@ -168,13 +168,44 @@ func insertContent(socket *net.UDPConn, reqType string) {
 	fmt.Scanln()
 }
 
-// register to a file's update from server
+// register(subscribe) to a file's update from server
 func register(socket *net.UDPConn) {
+	filePath := ""
+	monitorInterval := 0 // s
+
+	fmt.Println()
+	fmt.Printf("File path: ")
+	fmt.Scanln(&filePath)
+	fmt.Printf("Monitor interval: ")
+	fmt.Scanln(&monitorInterval)
+
+	_, respMsg := request(socket, &Request{
+		operation: 'S',
+		uuid:      "",
+		offset:    0,
+		length:    int32(monitorInterval * 1000),
+		content:   filePath,
+	})
+
+	fileUpdateMsg := respMsg
+
+	fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
+	fmt.Scan()
 
 }
 
 // get uuid for at-most-once request
 func getUUID(socket *net.UDPConn) (uuid string) {
+	_, respMsg := request(socket, &Request{
+		operation: 'I',
+		uuid:      "",
+		offset:    0,
+		length:    0,
+		content:   "",
+	})
+
+	uuid = respMsg
+
 	return uuid
 }
 
@@ -202,9 +233,10 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 		fmt.Println("recv data fail, err:", err)
 		return
 	}
+
 	respCode, respMsg = resolveResp(recvData[:n])
 
-	return
+	return respCode, respMsg
 }
 
 // resolve response
