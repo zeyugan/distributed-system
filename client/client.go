@@ -4,23 +4,34 @@ import (
 	"flag"
 	"fmt"
 	"net"
+	"time"
 )
 
-func main() {
+type cacheTimestamps struct {
+	content    string
+	tValidated time.Time // Tc in lecture slides
+	tModified  time.Time // Tmxlient in lecture slides
+}
 
-	// resolve command line arguments
-	var request_type string
-	var interval_time int
-	flag.StringVar(&request_type, "type", "idempotence", "request_type")
-	flag.IntVar(&interval_time, "t", 30, "interval_time")
+func main() {
+	// default config
+	reqType := "idempotence"
+	freshnessInterval := 30 // s
+	serverIP := "172.20.10.6"
+	serverPort := 12345
+
+	// client local cache
+	cache := make(map[string]cacheTimestamps)
+
+	// parse command line arguments
+	flag.StringVar(&reqType, "reqType", reqType, "reqType")
+	flag.IntVar(&freshnessInterval, "t", freshnessInterval, "freshnessInterval")
 	flag.Parse()
-	// fmt.Println("request_type", request_type)
-	// fmt.Println("interval_time", interval_time)
 
 	// build udp connection
 	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(172, 20, 10, 6),
-		Port: 12345,
+		IP:   net.ParseIP(serverIP),
+		Port: serverPort,
 	})
 	if err != nil {
 		fmt.Println("connect server fail, err:", err)
@@ -28,17 +39,37 @@ func main() {
 	}
 	defer socket.Close()
 
-	sendData := []byte("/Users/jiaweiyao/Documents/GitHub/distributed-system/test.txt,30")
-	_, err = socket.Write(sendData) // 发送数据
-	if err != nil {
-		fmt.Println("send data fail, err:", err)
-		return
+	// show user interface
+interfaceLoop:
+	for {
+		clearScreen()
+		fmt.Println("[ Client info ]")
+		fmt.Println("- Server IP:         ", serverIP)
+		fmt.Println("- Server port:       ", serverPort)
+		fmt.Println("- Request type:      ", reqType)
+		fmt.Println("- Freshness interval:", freshnessInterval, "s")
+		fmt.Println("")
+		fmt.Println("[ Options ]")
+		fmt.Println("- 1 Read content")
+		fmt.Println("- 2 Insert content")
+		fmt.Println("- 3 Register to file")
+		fmt.Println("- 0 Exit")
+		fmt.Println("")
+		fmt.Printf("Your option: ")
+
+		var op string
+		fmt.Scanln(&op)
+		switch op {
+		case "1":
+			readContent(socket, cache, freshnessInterval)
+		case "2":
+			insertContent(socket, reqType)
+		case "3":
+			register(socket)
+		case "0":
+			break interfaceLoop
+		default:
+		}
 	}
-	data := make([]byte, 4096)
-	n, remoteAddr, err := socket.ReadFromUDP(data) // 接收数据
-	if err != nil {
-		fmt.Println("recv data fail, err:", err)
-		return
-	}
-	fmt.Printf("recv:%v addr:%v count:%v\n", string(data[:n]), remoteAddr, n)
+	clearScreen()
 }
