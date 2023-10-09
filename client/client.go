@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+// global var
+var debug = true
+
 type cacheTimestamps struct {
 	content    string
 	tValidated time.Time // Tc in lecture slides
@@ -17,13 +20,16 @@ func main() {
 	// default config
 	reqType := "idempotence"
 	freshnessInterval := 30 // s
-	serverIP := "172.20.10.6"
+	serverIP := "10.0.0.2"
 	serverPort := 12345
 
 	// client local cache
 	cache := make(map[string]cacheTimestamps)
 
 	// parse command line arguments
+	flag.BoolVar(&debug, "debug", debug, "debug")
+	flag.StringVar(&serverIP, "ip", serverIP, "serverIP")
+	flag.IntVar(&serverPort, "p", serverPort, "serverPort")
 	flag.StringVar(&reqType, "reqType", reqType, "reqType")
 	flag.IntVar(&freshnessInterval, "t", freshnessInterval, "freshnessInterval")
 	flag.Parse()

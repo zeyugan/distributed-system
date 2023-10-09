@@ -5,6 +5,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"net"
+	"runtime"
 	"strconv"
 	"time"
 )
@@ -47,7 +48,7 @@ func readContent(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnes
 			uuid:      "",
 			offset:    int32(offset),
 			length:    int32(readLength),
-			content:   "",
+			content:   filePath,
 		})
 
 		// check file existance
@@ -176,7 +177,7 @@ func register(socket *net.UDPConn) {
 	fmt.Println()
 	fmt.Printf("File path: ")
 	fmt.Scanln(&filePath)
-	fmt.Printf("Monitor interval: ")
+	fmt.Printf("Monitor interval (s): ")
 	fmt.Scanln(&monitorInterval)
 
 	_, respMsg := request(socket, &Request{
@@ -220,6 +221,13 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 	binary.Write(sendData, binary.LittleEndian, []byte(request.content))
 
 	// send data
+	if debug {
+		fmt.Println()
+		fmt.Println("### debug msg")
+		fmt.Println("### funtion:", printCallerName())
+		fmt.Println("### request bytes:", sendData.Bytes())
+		fmt.Println()
+	}
 	_, err := socket.Write(sendData.Bytes())
 	if err != nil {
 		fmt.Println("send data fail, err:", err)
@@ -245,4 +253,10 @@ func resolveResp(resp []byte) (respCode int, respMsg string) {
 	binary.Read(bytes.NewReader(resp), binary.BigEndian, &respMsg)  // unmarshal resp msg
 
 	return respCode, respMsg
+}
+
+// for debug
+func printCallerName() string {
+	pc, _, _, _ := runtime.Caller(2)
+	return runtime.FuncForPC(pc).Name()
 }
