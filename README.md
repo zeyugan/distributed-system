@@ -91,4 +91,70 @@ network byte order -> system local byte order ntohl
 - e.g. response "0 xxxx-xxxx-xxxx-xxxx"
 
 
+# Usage
+## Client
+### Quick Start
+Client has been complied to a executable, you can simply run it:
+```shell
+./client/client
+```
 
+### Optional Command Line Arguments
+You can initalize the client with command line arguments below:
+
+|Parameter | Description                 | Default Value |
+|----------|-----------------------------|---------------|
+| `debug`  | Whether show debug message  | `true`
+| `ip`     | IP address of server        | `10.0.0.2`
+| `port`   | Port of server              | `12345`
+| `type`   | Request type                | `idempotence`
+| `t`      | Freshness interval of cache | `30`(second)
+
+
+Here is a example:
+```shell
+# This command allows you to customize the server info
+./client/client -ip 192.168.1.1 -p 6666
+```
+
+Note: if you set `type` to any other value expect `idempotence`, the request will not be idempotent. For example:
+```shell
+# Those command are idempotent
+./client/client -type idempotence
+./client/client
+
+# Those command are not idempotent
+./client/client -type non-idempotence
+./client/client -type doge
+./client/client -type I-love-distrubuted-system
+```
+
+### Debug
+Note: debug mode is ON by default, you can turn it off manually by setting the debug parameter to `false`
+
+When debug mode is on, debug message will be shown on terminal while using, providing debug information speacially the `raw request bytes`.
+
+A generic message is liked:
+```shell
+### debug msg
+### funtion: main.register
+### request bytes: [83 0 0 0 0 88 27 0 0 100 111 103 101]
+```
+
+The 2nd column shows the `funtion name` of the request caller.\
+The 3rd column shows the `raw request bytes`, each byte is shown as the `ASCII decimal format`
+
+Here is the comparison between the example and its raw content before marshalling:
+
+```shell
+### request bytes: [83 0 0 0 0 88 27 0 0 100 111 103 101]
+
+### raw content before marshalling
+option: 'S'
+UUID:   ""
+offset: 0
+length: 7
+content: doge
+```
+
+Through debug mode, we can check if the bytes after marshalling meet our expection.
