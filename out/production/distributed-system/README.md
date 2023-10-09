@@ -23,7 +23,6 @@ client-server communication is carried out using UDP.
 - Service 1: read a file by the following parameters: file name, offset, and number of bytes to read.
 - Service 2: insert byte(s) into a file by the following parameters: file name, offset, and byte stream to insert.
 - Service 3: allow client to regsiter for update for a file by passing in the filename and duration of subscription.
-- Service 4: generate uuid for client to use for at-least-once and at-most-once semantics
 
 ## report
 
@@ -50,9 +49,6 @@ client-server communication is carried out using UDP.
 - [x] Implement Service 1 without external library
 - [x] Implement Service 2 without external library
 - [ ] Implement Service 3 without external library
-- [ ] Implement UUID generation
-- [ ] Write service check UUID
-- [ ] Write service check cache
 - [ ] Finalize request and response format
 - [ ] Implement at-least-once semantics
 - [ ] Implement at-most-once semantics
@@ -63,32 +59,13 @@ client-server communication is carried out using UDP.
 
 # design
 
-## request format
+## query format
 
-| Operation    | id        | Offset    | Length    | Content       |
-|--------------|-----------|-----------|-----------|---------------|
-| (1 byte)     | (8 bytes) | (4 bytes) | (4 bytes) | Variable Size |
-| R/W/S/I Char | String    | Integer   | Integer   | String        |
+| Operation | Offset    | Length    | Content       |
+|-----------|-----------|-----------|---------------|
+| (1 byte)  | (4 bytes) | (4 bytes) | Variable Size |
 
 - for read operation, content is only the filepath
 - for write operation, content is the <filepath|data> string separated by `|`
-- e.g. write "W 00000000 <offset> 0000 /server/test.txt|hello world"
-- e.g. subscrption "S 0000000 0000 <duration millisecond> <filepath>"
-- e.g. read "R <snowflake id> <offset> <length> /server/test.txt"
-- e.g. request ID "I 00000000 0000 0000"
-
-client local byte order -> network byte order htonl
-network byte order -> system local byte order ntohl
-
-
-## response format
-| Code     | Message       |
-|----------|---------------|
-| (4 byte) | Variable size |
-| Integer  | String        |
-
-- e.g. response "0 hello world"
-- e.g. response "0 xxxx-xxxx-xxxx-xxxx"
-
 
 
