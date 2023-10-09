@@ -40,10 +40,10 @@ client-server communication is carried out using UDP.
 - [x] Implement Service 1 with external library (ZY)
 - [x] Implement Service 2 with external library (ZY)
 - [x] Implement Service 3 with external library (JW)
-- [ ] Implement client call to service 1 (ZH)
-- [ ] Implement client call to service 2 (ZH)
-- [ ] Implement client call to service 3 (ZH)
-- [ ] Implement client side cache (ZH)
+- [x] Implement client call to service 1 (ZH)
+- [x] Implement client call to service 2 (ZH)
+- [x] Implement client call to service 3 (ZH)
+- [x] Implement client side cache (ZH)
 
 ## stage 2: Implementation 08/10/2023
 
@@ -52,7 +52,7 @@ client-server communication is carried out using UDP.
 - [ ] Implement Service 3 without external library
 - [ ] Implement UUID generation
 - [ ] Write service check UUID
-- [ ] Write service check cache
+- [x] Write service check cache
 - [ ] Finalize request and response format
 - [ ] Implement at-least-once semantics
 - [ ] Implement at-most-once semantics
@@ -65,17 +65,18 @@ client-server communication is carried out using UDP.
 
 ## request format
 
-| Operation    | id        | Offset    | Length    | Content       |
+| Operation    | UUID        | Offset    | Length    | Content       |
 |--------------|-----------|-----------|-----------|---------------|
 | (1 byte)     | (8 bytes) | (4 bytes) | (4 bytes) | Variable Size |
 | R/W/S/I Char | String    | Integer   | Integer   | String        |
 
 - for read operation, content is only the filepath
 - for write operation, content is the <filepath|data> string separated by `|`
-- e.g. write "W 00000000 <offset> 0000 /server/test.txt|hello world"
-- e.g. subscrption "S 0000000 0000 <duration millisecond> <filepath>"
-- e.g. read "R <snowflake id> <offset> <length> /server/test.txt"
-- e.g. request ID "I 00000000 0000 0000"
+- e.g. write "W 00000000 \<offset> 0000 /server/test.txt|hello world"
+- e.g. subscrption "S 0000000 0000 \<duration millisecond> \<filepath>"
+- e.g. read "R \<snowflake UUID> \<offset> \<length> /server/test.txt"
+- e.g. request UUID "I 00000000 0000 0000 /server/test.txt"
+- e.g. request file modified time "T 00000000 0000 0000 /server/test.txt"
 
 client local byte order -> network byte order htonl
 network byte order -> system local byte order ntohl
