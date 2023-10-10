@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strconv"
@@ -187,11 +188,31 @@ func register(socket *net.UDPConn) {
 		fmt.Println(respMsg)
 	}
 
-	// listen to server for update msg
+	waitCtx, cancelWaitCtx := context.WithCancel(context.Background())
 
-	fileUpdateMsg := respMsg
+	// create routine to listen to server for update msg
+	// routine can be ended by ctx
+	go func(waitCtx context.Context) {
+		for {
+			select {
+			// end routine when timeout
+			case <-waitCtx.Done():
+				return
+			default:
+				_, respMsg := recv(socket)
+				fileUpdateMsg := respMsg
+				fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
+			}
+		}
+	}(waitCtx)
 
-	fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
+	// use channel to block the process to achieve waiting
+	// when timeout, manually end the routine with ctx
+	timeout := time.After(time.Duration(monitorInterval) * time.Second)
+	<-timeout
+	cancelWaitCtx()
+
+	fmt.Println("Time's up, monioring ends")
 	fmt.Scan()
 
 }
