@@ -180,13 +180,19 @@ func register(socket *net.UDPConn) {
 	fmt.Printf("Monitor interval (s): ")
 	fmt.Scanln(&monitorInterval)
 
-	_, respMsg := request(socket, &Request{
+	respCode, respMsg := request(socket, &Request{
 		operation: 'S',
 		uuid:      "",
 		offset:    0,
 		length:    int32(monitorInterval * 1000),
 		content:   filePath,
 	})
+
+	if respCode != 0 {
+		fmt.Println(respMsg)
+	}
+
+	// listen to server for update msg
 
 	fileUpdateMsg := respMsg
 
@@ -235,6 +241,14 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 	}
 
 	// get resp
+	respCode, respMsg = recv(socket)
+
+	return respCode, respMsg
+}
+
+// recv data for server
+func recv(socket *net.UDPConn) (respCode int, respMsg string) {
+
 	respData := make([]byte, 4096)
 	n, _, err := socket.ReadFromUDP(respData)
 	if err != nil {
@@ -245,7 +259,7 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 	if debug {
 		fmt.Println()
 		fmt.Println("### debug msg")
-		fmt.Println("### funtion:", printCallerName())
+		fmt.Println("### caller:", printCallerName())
 		fmt.Println("### resp bytes:", respData)
 		fmt.Println()
 	}
