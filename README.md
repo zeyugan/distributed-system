@@ -95,10 +95,20 @@ network byte order -> system local byte order ntohl
 # Usage
 ## Client
 ### Quick Start
-Client has been complied to a executable, you can simply run it:
+Client has been complied to executables in folder `cmd`, you can simply run it:
 ```shell
-./client/client_macos
+./cmd/client_macos
 ```
+
+Client provide multiple executable for different platforms:
+| Platform    | Executable     |
+|-------------|----------------|
+| Linux x64   | client_linux64 |
+| Linux x32   | client_linux32 |
+| Mac OS      | client_macos   |
+| Windows x64 | client_win64   |
+| Windows x32 | client_win32   |
+
 
 ### Optional Command Line Arguments
 You can initalize the client with command line arguments below:
@@ -115,25 +125,25 @@ You can initalize the client with command line arguments below:
 Here is a example:
 ```shell
 # This command allows you to customize the server info
-./client/client_macos -ip 192.168.1.1 -p 6666
+./cmd/client_macos -ip 192.168.1.1 -p 6666
 ```
 
 Note: if you set `type` to any other value expect `idempotence`, the request will not be idempotent. For example:
 ```shell
 # Those command are idempotent
-./client/client -type idempotence
-./client/client
+./cmd/client_macos -type idempotence
+./cmd/client_macos
 
 # Those command are not idempotent
-./client/client -type non-idempotence
-./client/client -type doge
-./client/client -type I-love-distrubuted-system
+./cmd/client_macos -type non-idempotence
+./cmd/client_macos -type doge
+./cmd/client_macos -type I-love-distrubuted-system
 ```
 
 ### Debug
 Note: debug mode is ON by default, you can turn it off manually by setting the debug parameter to `false`
 
-When debug mode is on, debug message will be shown on terminal while using, providing debug information speacially the `raw request bytes`.
+When debug mode is on, debug message will be shown on terminal while using, providing debug information speacially the `raw request bytes` and `raw respond bytes`.
 
 A generic message is liked:
 ```shell

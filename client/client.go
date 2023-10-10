@@ -4,17 +4,10 @@ import (
 	"flag"
 	"fmt"
 	"net"
-	"time"
 )
 
 // global var
 var debug = true
-
-type cacheTimestamps struct {
-	content    string
-	tValidated time.Time // Tc in lecture slides
-	tModified  time.Time // Tmxlient in lecture slides
-}
 
 func main() {
 	// default config
@@ -24,7 +17,7 @@ func main() {
 	serverPort := 12345
 
 	// client local cache
-	cache := make(map[string]cacheTimestamps)
+	cache := make(map[string]CacheStruct)
 
 	// parse command line arguments
 	flag.BoolVar(&debug, "debug", debug, "debug")

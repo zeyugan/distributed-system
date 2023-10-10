@@ -1,25 +1,20 @@
 package main
 
 import (
-	"bytes"
-	"encoding/binary"
 	"fmt"
 	"net"
-	"runtime"
 	"strconv"
 	"time"
 )
 
-type Request struct {
-	operation byte   // 1 byte
-	uuid      string // 8 bytes
-	offset    int32  // 4 bytes
-	length    int32  // 4 bytes as read length when reading or monitor interval length when registering
-	content   string // variable size
+type CacheStruct struct {
+	content    string
+	tValidated time.Time // Tc in lecture slides
+	tModified  time.Time // Tmxlient in lecture slides
 }
 
 // read content from server
-func readContent(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnessInterval int) {
+func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInterval int) {
 	filePath := ""
 	offset := 0
 	readLength := 0
@@ -63,7 +58,7 @@ func readContent(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnes
 			serverModifiedTime := getServerModifiedTime(socket, filePath)
 
 			// set new cache
-			cache[filePath] = cacheTimestamps{
+			cache[filePath] = CacheStruct{
 				content:    content,
 				tValidated: time.Now(),
 				tModified:  time.Unix(serverModifiedTime, 0),
@@ -78,7 +73,7 @@ func readContent(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnes
 }
 
 // check client local cache
-func checkCache(socket *net.UDPConn, cache map[string]cacheTimestamps, freshnessInterval int, filePath string) (content string, ok bool) {
+func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInterval int, filePath string) (content string, ok bool) {
 	contentCache, ok := cache[filePath]
 
 	if ok {
@@ -98,7 +93,7 @@ func checkCache(socket *net.UDPConn, cache map[string]cacheTimestamps, freshness
 				fmt.Println("* Local cache is validated")
 				content = contentCache.content
 				// update tValidated
-				cache[filePath] = cacheTimestamps{
+				cache[filePath] = CacheStruct{
 					content:    contentCache.content,
 					tValidated: time.Now(),
 					tModified:  contentCache.tModified,
@@ -214,71 +209,4 @@ func getUUID(socket *net.UDPConn) (uuid string) {
 	uuid = respMsg
 
 	return uuid
-}
-
-// marshal and send request to server
-func request(socket *net.UDPConn, request *Request) (respCode int, respMsg string) {
-	// marshal request data
-	sendData := bytes.NewBuffer([]byte{})
-	binary.Write(sendData, binary.LittleEndian, request.operation)
-	binary.Write(sendData, binary.LittleEndian, []byte(request.uuid))
-	binary.Write(sendData, binary.LittleEndian, request.offset)
-	binary.Write(sendData, binary.LittleEndian, request.length)
-	binary.Write(sendData, binary.LittleEndian, []byte(request.content))
-
-	// send data
-	if debug {
-		fmt.Println()
-		fmt.Println("### debug msg")
-		fmt.Println("### funtion:", printCallerName())
-		fmt.Println("### request bytes:", sendData.Bytes())
-		fmt.Println()
-	}
-	_, err := socket.Write(sendData.Bytes())
-	if err != nil {
-		fmt.Println("send data fail, err:", err)
-		return
-	}
-
-	// get resp
-	respCode, respMsg = recv(socket)
-
-	return respCode, respMsg
-}
-
-// recv data for server
-func recv(socket *net.UDPConn) (respCode int, respMsg string) {
-
-	respData := make([]byte, 4096)
-	n, _, err := socket.ReadFromUDP(respData)
-	if err != nil {
-		fmt.Println("recv data fail, err:", err)
-		return
-	}
-
-	if debug {
-		fmt.Println()
-		fmt.Println("### debug msg")
-		fmt.Println("### caller:", printCallerName())
-		fmt.Println("### resp bytes:", respData)
-		fmt.Println()
-	}
-
-	respCode, respMsg = resolveResp(respData[:n])
-
-	return respCode, respMsg
-}
-
-// resolve response
-func resolveResp(resp []byte) (respCode int, respMsg string) {
-	binary.Read(bytes.NewReader(resp), binary.BigEndian, &respCode) // unmarshal resp code
-	binary.Read(bytes.NewReader(resp), binary.BigEndian, &respMsg)  // unmarshal resp msg
-
-	return respCode, respMsg
-}
-
-// for debug
-func printCallerName() string {
-	pc, _, _, _ := runtime.Caller(2)
-	return runtime.FuncForPC(pc).Name()
 }
