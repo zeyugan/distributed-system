@@ -1,31 +1,32 @@
 src = $(wildcard *.go)
+target = cmd/client_linux64 cmd/client_linux32 \
+	  	 cmd/client_win64 cmd/client_win32 \
+	  	 cmd/client_macos
 
 # default make all
-all : executable/client_linux64 executable/client_linux32 \
-	  executable/client_win64 executable/client_win32 \
-	  executable/client_macos
+all : $(target)
 
 # Linux x64
-executable/client_linux64 : $(src)
-	GOOS=linux GOARCH=amd64 go build -o executable/client_linux64 *go
+cmd/client_linux64 : $(src)
+	GOOS=linux GOARCH=amd64 go build -o cmd/client_linux64 *go
 
 # Linux x32
-executable/client_linux32 : $(src)
-	GOOS=linux GOARCH=386 go build -o executable/client_linux32 *go
+cmd/client_linux32 : $(src)
+	GOOS=linux GOARCH=386 go build -o cmd/client_linux32 *go
 
 # Windows x64
-executable/client_win64 : $(src)
-	GOOS=windows GOARCH=amd64 go build -o executable/client_win64 *go
+cmd/client_win64 : $(src)
+	GOOS=windows GOARCH=amd64 go build -o cmd/client_win64 *go
 
 # Windows x32
-executable/client_win32 : $(src)
-	GOOS=windows GOARCH=386 go build -o executable/client_win32 *go
+cmd/client_win32 : $(src)
+	GOOS=windows GOARCH=386 go build -o cmd/client_win32 *go
 
 # MacOS
-executable/client_macos : $(src)
-	GOOS=darwin GOARCH=amd64 go build -o executable/client_macos *go
+cmd/client_macos : $(src)
+	GOOS=darwin GOARCH=amd64 go build -o cmd/client_macos *go
 
 .PHONY : clean
 
 clean:
-	rm executable/*
+	rm $(target)
