@@ -234,15 +234,23 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 		return
 	}
 
-	// recv data
-	recvData := make([]byte, 4096)
-	n, _, err := socket.ReadFromUDP(recvData)
+	// get resp
+	respData := make([]byte, 4096)
+	n, _, err := socket.ReadFromUDP(respData)
 	if err != nil {
 		fmt.Println("recv data fail, err:", err)
 		return
 	}
 
-	respCode, respMsg = resolveResp(recvData[:n])
+	if debug {
+		fmt.Println()
+		fmt.Println("### debug msg")
+		fmt.Println("### funtion:", printCallerName())
+		fmt.Println("### resp bytes:", respData)
+		fmt.Println()
+	}
+
+	respCode, respMsg = resolveResp(respData[:n])
 
 	return respCode, respMsg
 }
