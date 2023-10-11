@@ -59,7 +59,7 @@ public class FileSubscriptionServer {
                     response = "You are now registered for updates for " + duration + " minutes.";
                 }
 
-                byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
+                byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
                 sendMessagesToClient(responseBytes, receivePacket);
 
                 //print out the list of subscriptions
