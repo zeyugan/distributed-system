@@ -17,7 +17,7 @@ type Request struct {
 }
 
 // marshal and send request to server
-func request(socket *net.UDPConn, request *Request) (respCode int, respMsg string) {
+func request(socket *net.UDPConn, request *Request) (respCode int32, respMsg string) {
 	// marshal request data
 	sendData := bytes.NewBuffer([]byte{})
 	binary.Write(sendData, binary.LittleEndian, request.operation)
@@ -47,7 +47,7 @@ func request(socket *net.UDPConn, request *Request) (respCode int, respMsg strin
 }
 
 // recv data for server
-func recv(socket *net.UDPConn) (respCode int, respMsg string) {
+func recv(socket *net.UDPConn) (respCode int32, respMsg string) {
 
 	respData := make([]byte, 4096)
 	n, _, err := socket.ReadFromUDP(respData)
@@ -70,9 +70,9 @@ func recv(socket *net.UDPConn) (respCode int, respMsg string) {
 }
 
 // resolve response
-func resolveResp(resp []byte) (respCode int, respMsg string) {
-	binary.Read(bytes.NewReader(resp), binary.BigEndian, &respCode) // unmarshal resp code
-	binary.Read(bytes.NewReader(resp), binary.BigEndian, &respMsg)  // unmarshal resp msg
+func resolveResp(resp []byte) (respCode int32, respMsg string) {
+	binary.Read(bytes.NewReader(resp), binary.LittleEndian, &respCode) // unmarshal resp code
+	respMsg = string(resp[4:])                                         // unmarshal resp msg
 
 	return respCode, respMsg
 }
