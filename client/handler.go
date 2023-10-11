@@ -52,8 +52,12 @@ func recv(socket *net.UDPConn) (respCode int32, respMsg string) {
 	respData := make([]byte, 4096)
 	n, _, err := socket.ReadFromUDP(respData)
 	if err != nil {
-		fmt.Println("recv data fail, err:", err)
-		return
+		if netErr, ok := err.(net.Error); ok && netErr.Timeout() {
+			// ignore timeout err cuz timeout is used to achieve stop waiting while listen to
+			return
+		} else {
+			fmt.Println("recv data fail, err:", err)
+		}
 	}
 
 	if debug {
