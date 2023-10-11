@@ -60,7 +60,7 @@ public class CommonService {
     }
 
     public static byte[] responseCodeToByteArray(int value) {
-        return ByteBuffer.allocate(4).putInt(value).array();
+        return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
     }
 
 }
