@@ -13,8 +13,8 @@ func main() {
 	// default config
 	reqType := "idempotence"
 	freshnessInterval := 30 // s
-	serverIP := "10.0.0.2"
-	serverPort := 12345
+	serverIP := "127.0.0.1"
+	serverPort := 6666
 
 	// client local cache
 	cache := make(map[string]CacheStruct)

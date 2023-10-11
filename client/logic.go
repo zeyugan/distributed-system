@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"net"
 	"strconv"
@@ -188,33 +187,26 @@ func register(socket *net.UDPConn) {
 		fmt.Println(respMsg)
 	}
 
-	waitCtx, cancelWaitCtx := context.WithCancel(context.Background())
-
-	// create routine to listen to server for update msg
-	// routine can be ended by ctx
-	go func(waitCtx context.Context) {
-		for {
-			select {
-			// end routine when timeout
-			case <-waitCtx.Done():
-				return
-			default:
-				_, respMsg := recv(socket)
+	timeout := time.After(time.Duration(monitorInterval) * time.Second)
+	deadline := time.Now().Add(time.Duration(monitorInterval) * time.Second)
+	for {
+		select {
+		case <-timeout:
+			fmt.Println()
+			fmt.Println("* Time's up, monioring ends")
+			// cancel ReadDeadline
+			socket.SetReadDeadline(time.Time{})
+			fmt.Scanln()
+			return
+		default:
+			socket.SetReadDeadline(deadline)
+			_, respMsg := recv(socket)
+			if respMsg != "" {
 				fileUpdateMsg := respMsg
 				fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
 			}
 		}
-	}(waitCtx)
-
-	// use channel to block the process to achieve waiting
-	// when timeout, manually end the routine with ctx
-	timeout := time.After(time.Duration(monitorInterval) * time.Second)
-	<-timeout
-	cancelWaitCtx()
-
-	fmt.Println("Time's up, monioring ends")
-	fmt.Scan()
-
+	}
 }
 
 // get uuid for at-most-once request
