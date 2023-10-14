@@ -65,16 +65,16 @@ client-server communication is carried out using UDP.
 
 ## request format
 
-| Operation    | UUID        | Offset    | Length    | Content       |
-|--------------|-----------|-----------|-----------|---------------|
-| (1 byte)     | (8 bytes) | (4 bytes) | (4 bytes) | Variable Size |
-| R/W/S/I Char | String    | Integer   | Integer   | String        |
+| Operation    | UUID       | Offset    | Length    | Content       |
+|--------------|------------|-----------|-----------|---------------|
+| (1 byte)     | (16 bytes) | (4 bytes) | (4 bytes) | Variable Size |
+| R/W/S/I Char | String     | Integer   | Integer   | String        |
 
 - for read operation, content is only the filepath
 - for write operation, content is the <filepath|data> string separated by `|`
 - e.g. write "W 00000000 \<offset> 0000 /server/test.txt|hello world"
 - e.g. subscrption "S 0000000 0000 \<duration millisecond> \<filepath>"
-- e.g. read "R \<snowflake UUID> \<offset> \<length> /server/test.txt"
+- e.g. read "R \<UUID> \<offset> \<length> /server/test.txt"
 - e.g. request UUID "I 00000000 0000 0000 /server/test.txt"
 - e.g. request file modified time "T 00000000 0000 0000 /server/test.txt"
 
