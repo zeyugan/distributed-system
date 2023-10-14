@@ -8,6 +8,10 @@ import java.io.RandomAccessFile;
 public class Service {
 
 
+    // active uuid list
+    public static String[] uuidList = new String[100];
+
+
     /***
      * Service 1: Read specified file from offset with length
      * @return specified file content
