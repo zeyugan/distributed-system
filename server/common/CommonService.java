@@ -6,6 +6,7 @@ import java.net.DatagramPacket;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 public class CommonService {
 
@@ -56,6 +57,11 @@ public class CommonService {
 
     public static byte[] responseCodeToByteArray(int value) {
         return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
+    }
+
+    // generate a random UUID
+    public static String generateUUID() {
+        return UUID.randomUUID().toString();
     }
 
 }

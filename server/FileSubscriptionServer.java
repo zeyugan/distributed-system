@@ -43,19 +43,42 @@ public class FileSubscriptionServer {
 //                String request = new String(receivePacket.getData(), 0, receivePacket.getLength());
 
                 RequestDTO requestDTO = CommonService.populateRequestDTO(receivePacket);
-                String filename  = requestDTO.getContent();
-                int duration = requestDTO.getOffset();
 
-                InetAddress address = receivePacket.getAddress();
-                int port = receivePacket.getPort();
+                char operation = requestDTO.getOperation();
 
-                if (subscriptions.containsKey(address + ":" + port) ) {
-                    response = "There is an existing subscription for your specified file.";
-                } else {
-                    FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
-                    subscriptions.put(address + ":" + port, fileSubscriptionDTO);
-                    response = "You are now registered for updates for " + duration + " minutes.";
+                // switch case for different operations
+                switch (operation) {
+                    case 'R':
+                        //read file
+                        response = Service.readFile(requestDTO);
+                        break;
+                    case 'W':
+                        //write file
+                        response = Service.writeFile(requestDTO);
+                        break;
+                    case 'S':
+                        // subscribe to file
+                        String filename = requestDTO.getContent();
+                        int duration = requestDTO.getOffset();
+
+                        InetAddress address = receivePacket.getAddress();
+                        int port = receivePacket.getPort();
+
+                        if (subscriptions.containsKey(address + ":" + port)) {
+                            response = "There is an existing subscription for your specified file.";
+                        } else {
+                            FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
+                            subscriptions.put(address + ":" + port, fileSubscriptionDTO);
+                            response = "You are now registered for updates for " + duration + " minutes.";
+                        }
+                        break;
+                    case 'I':
+                        // request UUID
+                        response = CommonService.generateUUID();
+                    default:
+                        response = "Invalid operation";
                 }
+
 
                 byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
                 sendMessagesToClient(responseBytes, receivePacket);
@@ -127,8 +150,6 @@ public class FileSubscriptionServer {
     }
 
 
-
-
     private static void sendMessagesToClient(byte[] sendData, DatagramPacket receivePacket) {
         DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length,
                 receivePacket.getAddress(), receivePacket.getPort());
@@ -138,10 +159,6 @@ public class FileSubscriptionServer {
             e.printStackTrace();
         }
     }
-
-
-
-
 
 
 }
