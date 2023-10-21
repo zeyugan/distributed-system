@@ -162,7 +162,7 @@ Here is the comparison between the example and its raw content before marshallin
 
 ### raw content before marshalling
 option: 'S'
-UUID:   ""
+UUID:   "0000000000000000"
 offset: 0
 length: 7
 content: doge
