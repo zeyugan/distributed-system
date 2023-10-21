@@ -40,7 +40,7 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 		// cache is invalid, get content from server
 		respCode, respMsg := request(socket, &Request{
 			operation: 'R',
-			uuid:      "",
+			uuid:      defaultUUID,
 			offset:    int32(offset),
 			length:    int32(readLength),
 			content:   filePath,
