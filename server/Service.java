@@ -4,13 +4,16 @@ import server.dto.RequestDTO;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class Service {
 
 
     // active uuid list
-    public static String[] uuidList = new String[1024];
+    public static ArrayList<String> uuidList = new ArrayList<>();
+
+    static String whitelisted = "000000000000000000000000000000000000";
 
 
     /***
@@ -62,6 +65,11 @@ public class Service {
         // get uuid
         String uuid = dto.getUuid();
 
+        // check if uuid is whitelisted or exist in uuidList
+        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
+            return "1";
+        }
+
         try {
             String content = dto.getContent();
 
@@ -83,5 +91,14 @@ public class Service {
         }
 
         return "0";
+    }
+    // generate a random UUID
+    public static String generateUUID() {
+        String uuid = UUID.randomUUID().toString();
+
+        // add to list
+        uuidList.add(uuid);
+
+        return UUID.randomUUID().toString();
     }
 }

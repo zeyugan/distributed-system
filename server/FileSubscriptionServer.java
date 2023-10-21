@@ -74,7 +74,7 @@ public class FileSubscriptionServer {
                             break;
                         case 'I':
                             // request UUID
-                            response = CommonService.generateUUID();
+                            response = Service.generateUUID();
                             break;
                         default:
                             response = "Invalid operation";

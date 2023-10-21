@@ -8,6 +8,8 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static server.Service.uuidList;
+
 public class CommonService {
 
     //populate RequestDTO when receiving packet from client
@@ -85,10 +87,6 @@ public class CommonService {
         return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
     }
 
-    // generate a random UUID
-    public static String generateUUID() {
-        return UUID.randomUUID().toString();
-    }
 
 //    public static UUID convertBytesToUUID(byte[] bytes) {
 //        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
