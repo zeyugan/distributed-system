@@ -30,6 +30,8 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 	fmt.Scanln(&readLength)
 	fmt.Println()
 
+	// cache
+
 	// try to obtain content in cache
 	contentCache, ok := checkCache(socket, cache, freshnessInterval, filePath)
 	if ok {
@@ -51,6 +53,7 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 			fmt.Println()
 			fmt.Printf("File %v doesn't exist\n", content)
 			fmt.Scanln()
+			fmt.Printf("Please press enter to continue...")
 			return
 
 		} else {
