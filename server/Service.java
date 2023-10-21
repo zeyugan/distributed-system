@@ -60,7 +60,7 @@ public class Service {
         int offset = dto.getOffset();
 
         // get uuid
-        UUID uuid = dto.getUuid();
+        String uuid = dto.getUuid();
 
         try {
             String content = dto.getContent();

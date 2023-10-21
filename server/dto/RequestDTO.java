@@ -5,7 +5,7 @@ import java.util.UUID;
 public class RequestDTO {
 
     private char operation;
-    private UUID uuid;
+    private String uuid;
     private int offset;
     private int length;
     private String content;
@@ -18,11 +18,11 @@ public class RequestDTO {
         this.operation = operation;
     }
 
-    public UUID getUuid() {
+    public String getUuid() {
         return uuid;
     }
 
-    public void setUuid(UUID uuid) {
+    public void setUuid(String uuid) {
         this.uuid = uuid;
     }
 

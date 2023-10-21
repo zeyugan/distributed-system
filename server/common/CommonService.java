@@ -26,7 +26,7 @@ public class CommonService {
         //TO-DO for UUID
         byte[] bytesForUuid = new byte[36];
         System.arraycopy(receivePacket.getData(), 1, bytesForUuid, 0, bytesForUuid.length);
-        UUID uuid = convertBytesToUUID(bytesForUuid);
+        String uuid = new String(bytesForUuid, StandardCharsets.UTF_8);
         requestDTO.setUuid(uuid);
         System.out.println("uuid: " + uuid);
 
@@ -90,12 +90,12 @@ public class CommonService {
         return UUID.randomUUID().toString();
     }
 
-    public static UUID convertBytesToUUID(byte[] bytes) {
-        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
-        long high = byteBuffer.getLong();
-        long low = byteBuffer.getLong();
-        return new UUID(high, low);
-    }
+//    public static UUID convertBytesToUUID(byte[] bytes) {
+//        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+//        long high = byteBuffer.getLong();
+//        long low = byteBuffer.getLong();
+//        return new UUID(high, low);
+//    }
 
     public static byte[] convertUUIDToBytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
