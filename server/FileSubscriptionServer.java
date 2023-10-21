@@ -134,9 +134,7 @@ public class FileSubscriptionServer {
                         byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, updatedContent);
                         sendMessagesToClient(responseBytes, sendPacket);
                     }
-                } catch (ParseException e) {
-                    throw new RuntimeException(e);
-                } catch (UnknownHostException e) {
+                } catch (ParseException | UnknownHostException e) {
                     throw new RuntimeException(e);
                 }
 
