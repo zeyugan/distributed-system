@@ -81,9 +81,9 @@ public class FileSubscriptionServer {
                     }
 
                     if (null != response) {
-                        responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
+                        responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
                     } else {
-                        responseBytes = CommonService.populateResponseBytesWithResponseCode(2, uuid);
+                        responseBytes = CommonService.populateResponseBytesWithResponseCode(0, uuid);
                     }
                     sendMessagesToClient(responseBytes, receivePacket);
 
