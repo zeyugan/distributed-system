@@ -10,7 +10,7 @@ public class Service {
 
 
     // active uuid list
-    public static UUID[] uuidList = new UUID[1024];
+    public static String[] uuidList = new String[1024];
 
 
     /***
