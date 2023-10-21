@@ -20,9 +20,9 @@ public class Service {
 
         // print current working directory
         System.out.println("Current working directory: " + System.getProperty("user.dir"));
-
         // get offset
         int offset = dto.getOffset();
+        System.out.println("offset test:" + offset);
 
         // get length, if length is 0 or null, set buffer size to 65536
         int length = dto.getLength();
@@ -37,9 +37,14 @@ public class Service {
         // read the file
         // Open the file in read-only mode
         RandomAccessFile file = new RandomAccessFile("./server/storage" + filePath, "r");
+        System.out.println("offset:" + offset);
+        System.out.println("length:" + length);
+
         file.seek(offset);
         byte[] buffer = new byte[length];
         file.read(buffer);
+
+        System.out.println("buffer:"  + new String(buffer));
 
         // Close the file
         file.close();

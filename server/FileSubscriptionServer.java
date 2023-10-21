@@ -5,10 +5,7 @@ import server.dto.FileSubscriptionDTO;
 import server.dto.RequestDTO;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -27,7 +24,7 @@ public class FileSubscriptionServer {
     private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         DatagramPacket receivePacket = null;
         String response;
         try {
@@ -37,59 +34,68 @@ public class FileSubscriptionServer {
             //For store the map of the subscribed files
 
             while (true) {
-                receivePacket = new DatagramPacket(receiveData, receiveData.length);
-                serverSocket.receive(receivePacket);
+                try {
+                    receivePacket = new DatagramPacket(receiveData, receiveData.length);
+                    serverSocket.receive(receivePacket);
 
 //                String request = new String(receivePacket.getData(), 0, receivePacket.getLength());
 
-                RequestDTO requestDTO = CommonService.populateRequestDTO(receivePacket);
+                    RequestDTO requestDTO = CommonService.populateRequestDTO(receivePacket);
 
-                char operation = requestDTO.getOperation();
+                    char operation = requestDTO.getOperation();
 
-                // switch case for different operations
-                switch (operation) {
-                    case 'R':
-                        //read file
-                        response = Service.readFile(requestDTO);
-                        break;
-                    case 'W':
-                        //write file
-                        response = Service.writeFile(requestDTO);
-                        break;
-                    case 'S':
-                        // subscribe to file
-                        String filename = requestDTO.getContent();
-                        int duration = requestDTO.getOffset();
+                    // switch case for different operations
+                    switch (operation) {
+                        case 'R':
+                            //read file
+                            response = Service.readFile(requestDTO);
+                            break;
+                        case 'W':
+                            //write file
+                            response = Service.writeFile(requestDTO);
+                            break;
+                        case 'S':
+                            // subscribe to file
+                            String filename = requestDTO.getContent();
+                            int duration = requestDTO.getOffset();
 
-                        InetAddress address = receivePacket.getAddress();
-                        int port = receivePacket.getPort();
+                            InetAddress address = receivePacket.getAddress();
+                            int port = receivePacket.getPort();
 
-                        if (subscriptions.containsKey(address + ":" + port)) {
-                            response = "There is an existing subscription for your specified file.";
-                        } else {
-                            FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
-                            subscriptions.put(address + ":" + port, fileSubscriptionDTO);
-                            response = "You are now registered for updates for " + duration + " minutes.";
-                        }
-                        break;
-                    case 'I':
-                        // request UUID
-                        response = CommonService.generateUUID();
-                        break;
-                    default:
-                        response = "Invalid operation";
+                            if (subscriptions.containsKey(address + ":" + port)) {
+                                response = "There is an existing subscription for your specified file.";
+                            } else {
+                                FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
+                                subscriptions.put(address + ":" + port, fileSubscriptionDTO);
+                                response = "You are now registered for updates for " + duration + " minutes.";
+                            }
+                            break;
+                        case 'I':
+                            // request UUID
+                            response = CommonService.generateUUID();
+                            break;
+                        default:
+                            response = "Invalid operation";
+                    }
+
+
+                    System.out.println("response:" + response);
+                    byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
+                    System.out.println("responseBytes:" + responseBytes);
+
+                    sendMessagesToClient(responseBytes, receivePacket);
+
+                    //print out the list of subscriptions
+                    System.out.println("===========List of servers and subscripted files===========");
+                    subscriptions.forEach((key, value) -> System.out.println(key + ": " + value.toString()));
+                } catch (IOException e) {
+                    response = "Operation failed.";
+                    byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
+                    sendMessagesToClient(responseBytes, receivePacket);
+                    e.printStackTrace();
                 }
-
-
-                byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
-                sendMessagesToClient(responseBytes, receivePacket);
-
-                //print out the list of subscriptions
-                System.out.println("===========List of servers and subscripted files===========");
-                subscriptions.forEach((key, value) -> System.out.println(key + ": " + value.toString()));
-
             }
-        } catch (IOException e) {
+        } catch (SocketException e) {
             e.printStackTrace();
         } finally {
             if (serverSocket != null && !serverSocket.isClosed()) {

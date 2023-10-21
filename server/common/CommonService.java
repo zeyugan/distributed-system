@@ -20,25 +20,39 @@ public class CommonService {
         char firstChar = (char) firstByte;
         requestDTO.setOperation(firstChar);
 
+        System.out.println("receivePacket: " + receivePacket.getData());
+
+
         //TO-DO for UUID
+        byte[] bytesForUuid = new byte[16];
+        System.arraycopy(receivePacket.getData(), 1, bytesForUuid, 0, bytesForUuid.length);
+        String uuid = new String(bytesForUuid, StandardCharsets.UTF_8);
+        requestDTO.setUuid(uuid);
+        System.out.println("uuid: " + uuid);
 
         //Get offset
         byte[] bytesForOffset = new byte[4];
-        System.arraycopy(receivePacket.getData(), 1, bytesForOffset, 0, bytesForOffset.length);
+        System.arraycopy(receivePacket.getData(), 17, bytesForOffset, 0, bytesForOffset.length);
         int offset = ByteBuffer.wrap(bytesForOffset).order(ByteOrder.LITTLE_ENDIAN).getInt();
         requestDTO.setOffset(offset);
+        System.out.println("offset: " + offset);
+
 
         //Get length
         byte[] bytesForLength = new byte[4];
-        System.arraycopy(receivePacket.getData(), 5, bytesForLength, 0, bytesForLength.length);
+        System.arraycopy(receivePacket.getData(), 21, bytesForLength, 0, bytesForLength.length);
         int length = ByteBuffer.wrap(bytesForLength).order(ByteOrder.LITTLE_ENDIAN).getInt();
-        requestDTO.setOffset(length);
+        requestDTO.setLength(length);
+        System.out.println("length: " + length);
+
 
         //Get content
-        byte[] bytesForContent = new byte[receivePacket.getLength() - 9];
-        System.arraycopy(receivePacket.getData(), 9, bytesForContent, 0, bytesForContent.length);
+        byte[] bytesForContent = new byte[receivePacket.getLength() - 25];
+        System.arraycopy(receivePacket.getData(), 25, bytesForContent, 0, bytesForContent.length);
         String content = new String(bytesForContent, StandardCharsets.UTF_8);
         requestDTO.setContent(content);
+        System.out.println("content: " + content);
+
 
         return requestDTO;
     }
