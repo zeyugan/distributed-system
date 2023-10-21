@@ -24,7 +24,7 @@ public class CommonService {
 
 
         //TO-DO for UUID
-        byte[] bytesForUuid = new byte[16];
+        byte[] bytesForUuid = new byte[36];
         System.arraycopy(receivePacket.getData(), 1, bytesForUuid, 0, bytesForUuid.length);
         UUID uuid = convertBytesToUUID(bytesForUuid);
         requestDTO.setUuid(uuid);
@@ -33,7 +33,7 @@ public class CommonService {
 
         //Get offset
         byte[] bytesForOffset = new byte[4];
-        System.arraycopy(receivePacket.getData(), 17, bytesForOffset, 0, bytesForOffset.length);
+        System.arraycopy(receivePacket.getData(), 37, bytesForOffset, 0, bytesForOffset.length);
         int offset = ByteBuffer.wrap(bytesForOffset).order(ByteOrder.LITTLE_ENDIAN).getInt();
         requestDTO.setOffset(offset);
         System.out.println("offset: " + offset);
@@ -41,15 +41,15 @@ public class CommonService {
 
         //Get length
         byte[] bytesForLength = new byte[4];
-        System.arraycopy(receivePacket.getData(), 21, bytesForLength, 0, bytesForLength.length);
+        System.arraycopy(receivePacket.getData(), 41, bytesForLength, 0, bytesForLength.length);
         int length = ByteBuffer.wrap(bytesForLength).order(ByteOrder.LITTLE_ENDIAN).getInt();
         requestDTO.setLength(length);
         System.out.println("length: " + length);
 
 
         //Get content
-        byte[] bytesForContent = new byte[receivePacket.getLength() - 25];
-        System.arraycopy(receivePacket.getData(), 25, bytesForContent, 0, bytesForContent.length);
+        byte[] bytesForContent = new byte[receivePacket.getLength() - 45];
+        System.arraycopy(receivePacket.getData(), 45, bytesForContent, 0, bytesForContent.length);
         String content = new String(bytesForContent, StandardCharsets.UTF_8);
         requestDTO.setContent(content);
         System.out.println("content: " + content);
