@@ -26,7 +26,7 @@ public class CommonService {
         //TO-DO for UUID
         byte[] bytesForUuid = new byte[16];
         System.arraycopy(receivePacket.getData(), 1, bytesForUuid, 0, bytesForUuid.length);
-        String uuid = new String(bytesForUuid, StandardCharsets.UTF_8);
+        UUID uuid = convertBytesToUUID(bytesForUuid);
         requestDTO.setUuid(uuid);
         System.out.println("uuid: " + uuid);
 
