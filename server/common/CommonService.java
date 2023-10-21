@@ -8,8 +8,6 @@ import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
-import static server.Service.uuidList;
-
 public class CommonService {
 
     //populate RequestDTO when receiving packet from client
