@@ -74,24 +74,20 @@ public class FileSubscriptionServer {
                             break;
                         case 'I':
                             // request UUID
-                            uuid = CommonService.generateUUID();
+                            response = CommonService.generateUUID();
                             break;
                         default:
                             response = "Invalid operation";
                     }
 
-                    if (null != response) {
-                        responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
-                    } else {
-                        responseBytes = CommonService.populateResponseBytesWithResponseCode(0, uuid);
-                    }
+                    responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
+
                     sendMessagesToClient(responseBytes, receivePacket);
 
                     //print out the list of subscriptions
                     System.out.println("===========List of servers and subscripted files===========");
                     subscriptions.forEach((key, value) -> System.out.println(key + ": " + value.toString()));
-                }
-                catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     response = "Invalid operation";
                     responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);

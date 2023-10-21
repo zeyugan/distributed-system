@@ -86,8 +86,8 @@ public class CommonService {
     }
 
     // generate a random UUID
-    public static byte[] generateUUID() {
-        return convertUUIDToBytes(UUID.randomUUID());
+    public static String generateUUID() {
+        return UUID.randomUUID().toString();
     }
 
     public static UUID convertBytesToUUID(byte[] bytes) {
