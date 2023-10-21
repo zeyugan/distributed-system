@@ -68,6 +68,7 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 
 	fmt.Println()
 	fmt.Println("Content: ", content)
+	fmt.Printf("Please press enter to continue...")
 	fmt.Scanln()
 
 }
@@ -162,6 +163,7 @@ func insertContent(socket *net.UDPConn, reqType string) {
 	fmt.Println()
 	fmt.Println("Server resp:", respMsg)
 	fmt.Scanln()
+	fmt.Printf("Please press enter to continue...")
 }
 
 // register(subscribe) to a file's update from server
@@ -197,6 +199,7 @@ func register(socket *net.UDPConn) {
 			// cancel ReadDeadline
 			socket.SetReadDeadline(time.Time{})
 			fmt.Scanln()
+			fmt.Printf("Please press enter to continue...")
 			return
 		default:
 			socket.SetReadDeadline(deadline)
