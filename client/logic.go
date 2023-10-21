@@ -95,7 +95,7 @@ func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInte
 
 			if serverModifiedTime == contentCache.tModified.Unix() {
 				// not fresh but valid
-				fmt.Println("* Local cache is validated")
+				fmt.Println("* File is not modified,local cache is validated")
 				content = contentCache.content
 				// update tValidated
 				cache[cacheKey] = CacheStruct{
@@ -107,12 +107,14 @@ func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInte
 			} else {
 				// neither fresh nor valid
 				// get latest version from server
+				fmt.Println("* File is modified, get the latest content from server")
 				ok = false
 			}
 		}
 
 	} else {
 		// not found in cache
+		fmt.Println("* File not found in cache, get from server")
 		ok = false
 	}
 
