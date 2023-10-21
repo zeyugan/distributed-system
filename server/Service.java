@@ -4,12 +4,13 @@ import server.dto.RequestDTO;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.UUID;
 
 public class Service {
 
 
     // active uuid list
-    public static String[] uuidList = new String[100];
+    public static UUID[] uuidList = new UUID[1024];
 
 
     /***
@@ -57,6 +58,9 @@ public class Service {
     public static String writeFile(RequestDTO dto) throws IOException {
         // get offset
         int offset = dto.getOffset();
+
+        // get uuid
+        UUID uuid = dto.getUuid();
 
         try {
             String content = dto.getContent();

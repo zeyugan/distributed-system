@@ -26,7 +26,9 @@ public class FileSubscriptionServer {
 
     public static void main(String[] args) {
         DatagramPacket receivePacket = null;
-        String response;
+        String response = null;
+        byte[] uuid = new byte[2];
+        byte[] responseBytes;
         try {
             //server port number
             serverSocket = new DatagramSocket(6666);
@@ -72,28 +74,30 @@ public class FileSubscriptionServer {
                             break;
                         case 'I':
                             // request UUID
-                            response = CommonService.generateUUID();
+                            uuid = CommonService.generateUUID();
                             break;
                         default:
                             response = "Invalid operation";
                     }
 
-
-                    System.out.println("response:" + response);
-                    byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(0, response);
-                    System.out.println("responseBytes:" + responseBytes);
-
+                    if (null != response) {
+                        responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
+                    } else {
+                        responseBytes = CommonService.populateResponseBytesWithResponseCode(2, uuid);
+                    }
                     sendMessagesToClient(responseBytes, receivePacket);
 
                     //print out the list of subscriptions
                     System.out.println("===========List of servers and subscripted files===========");
                     subscriptions.forEach((key, value) -> System.out.println(key + ": " + value.toString()));
-                } catch (IOException e) {
-                    response = "Operation failed.";
-                    byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
-                    sendMessagesToClient(responseBytes, receivePacket);
-                    e.printStackTrace();
                 }
+                catch (Exception e){
+                    e.printStackTrace();
+                    response = "Invalid operation";
+                    responseBytes = CommonService.populateResponseBytesWithResponseCode(2, response);
+                    sendMessagesToClient(responseBytes, receivePacket);
+                }
+
             }
         } catch (SocketException e) {
             e.printStackTrace();

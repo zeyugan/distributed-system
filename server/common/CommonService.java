@@ -30,6 +30,7 @@ public class CommonService {
         requestDTO.setUuid(uuid);
         System.out.println("uuid: " + uuid);
 
+
         //Get offset
         byte[] bytesForOffset = new byte[4];
         System.arraycopy(receivePacket.getData(), 17, bytesForOffset, 0, bytesForOffset.length);
@@ -58,7 +59,7 @@ public class CommonService {
     }
 
     //Convert responseCode and responseMessage to a combined byte[]
-    public static byte[] populateResponseBytesWithResponseCode(int responseCode, String responseMessage){
+    public static byte[] populateResponseBytesWithResponseCode(int responseCode, String responseMessage) {
 
         byte[] responseCodeBytes = responseCodeToByteArray(responseCode);
         byte[] responseStringBytes = responseMessage.getBytes();
@@ -69,13 +70,38 @@ public class CommonService {
         return combinedBytes;
     }
 
+    //overload one that takes in a byte array as responseMessage
+    public static byte[] populateResponseBytesWithResponseCode(int responseCode, byte[] responseMessage) {
+
+        byte[] responseCodeBytes = responseCodeToByteArray(responseCode);
+        byte[] combinedBytes = new byte[responseCodeBytes.length + responseMessage.length];
+        System.arraycopy(responseCodeBytes, 0, combinedBytes, 0, responseCodeBytes.length);
+        System.arraycopy(responseMessage, 0, combinedBytes, responseCodeBytes.length, responseMessage.length);
+
+        return combinedBytes;
+    }
+
     public static byte[] responseCodeToByteArray(int value) {
         return ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(value).array();
     }
 
     // generate a random UUID
-    public static String generateUUID() {
-        return UUID.randomUUID().toString();
+    public static byte[] generateUUID() {
+        return convertUUIDToBytes(UUID.randomUUID());
+    }
+
+    public static UUID convertBytesToUUID(byte[] bytes) {
+        ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
+        long high = byteBuffer.getLong();
+        long low = byteBuffer.getLong();
+        return new UUID(high, low);
+    }
+
+    public static byte[] convertUUIDToBytes(UUID uuid) {
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        return bb.array();
     }
 
 }

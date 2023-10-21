@@ -1,9 +1,11 @@
 package server.dto;
 
+import java.util.UUID;
+
 public class RequestDTO {
 
     private char operation;
-    private String uuid;
+    private UUID uuid;
     private int offset;
     private int length;
     private String content;
@@ -16,11 +18,11 @@ public class RequestDTO {
         this.operation = operation;
     }
 
-    public String getUuid() {
+    public UUID getUuid() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUuid(UUID uuid) {
         this.uuid = uuid;
     }
 
