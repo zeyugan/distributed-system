@@ -118,7 +118,7 @@ func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInte
 func getServerModifiedTime(socket *net.UDPConn, filePath string) (serverModifiedTime int64) {
 	_, respMsg := request(socket, &Request{
 		operation: 'T',
-		uuid:      "",
+		uuid:      defaultUUID,
 		offset:    0,
 		length:    0,
 		content:   filePath,
@@ -130,7 +130,7 @@ func getServerModifiedTime(socket *net.UDPConn, filePath string) (serverModified
 
 // insert content to a file from server
 func insertContent(socket *net.UDPConn, reqType string) {
-	uuid := ""
+	uuid := defaultUUID
 	filePath := ""
 	offset := 0
 	insertion := ""
@@ -177,7 +177,7 @@ func register(socket *net.UDPConn) {
 
 	respCode, respMsg := request(socket, &Request{
 		operation: 'S',
-		uuid:      "",
+		uuid:      defaultUUID,
 		offset:    0,
 		length:    int32(monitorInterval * 1000),
 		content:   filePath,
@@ -213,7 +213,7 @@ func register(socket *net.UDPConn) {
 func getUUID(socket *net.UDPConn) (uuid string) {
 	_, respMsg := request(socket, &Request{
 		operation: 'I',
-		uuid:      "",
+		uuid:      defaultUUID,
 		offset:    0,
 		length:    0,
 		content:   "",
