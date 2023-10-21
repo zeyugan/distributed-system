@@ -30,10 +30,11 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 	fmt.Scanln(&readLength)
 	fmt.Println()
 
-	// cache
+	// generate cache key
+	cacheKey := filePath + "|" + strconv.Itoa(offset) + "|" + strconv.Itoa(readLength)
 
 	// try to obtain content in cache
-	contentCache, ok := checkCache(socket, cache, freshnessInterval, filePath)
+	contentCache, ok := checkCache(socket, cache, freshnessInterval, filePath, cacheKey)
 	if ok {
 		// cache is valid
 		content = contentCache
@@ -61,7 +62,7 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 			serverModifiedTime := getServerModifiedTime(socket, filePath)
 
 			// set new cache
-			cache[filePath] = CacheStruct{
+			cache[cacheKey] = CacheStruct{
 				content:    content,
 				tValidated: time.Now(),
 				tModified:  time.Unix(serverModifiedTime, 0),
@@ -77,8 +78,8 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 }
 
 // check client local cache
-func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInterval int, filePath string) (content string, ok bool) {
-	contentCache, ok := cache[filePath]
+func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInterval int, filePath string, cacheKey string) (content string, ok bool) {
+	contentCache, ok := cache[cacheKey]
 
 	if ok {
 		// found in cache
@@ -97,7 +98,7 @@ func checkCache(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInte
 				fmt.Println("* Local cache is validated")
 				content = contentCache.content
 				// update tValidated
-				cache[filePath] = CacheStruct{
+				cache[cacheKey] = CacheStruct{
 					content:    contentCache.content,
 					tValidated: time.Now(),
 					tModified:  contentCache.tModified,
