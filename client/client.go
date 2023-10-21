@@ -8,7 +8,7 @@ import (
 
 // global var
 var debug = true
-var defaultUUID = "0000000000000000"
+var defaultUUID = "000000000000000000000000000000000000"
 
 func main() {
 	// default config
