@@ -27,7 +27,7 @@ public class FileSubscriptionServer {
     public static void main(String[] args) {
         DatagramPacket receivePacket = null;
         String response = null;
-        byte[] uuid = new byte[2];
+        byte[] uuid = new byte[16];
         byte[] responseBytes;
         try {
             //server port number
