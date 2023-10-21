@@ -75,6 +75,10 @@ public class FileSubscriptionServer {
                             // request UUID
                             response = Service.generateUUID();
                             break;
+                        case 'T':
+                            // get last modified time
+                            response = Service.getLastModifiedTime(requestDTO);
+                            break;
                         default:
                             response = "Invalid operation";
                     }

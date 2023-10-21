@@ -2,6 +2,7 @@ package server;
 
 import server.dto.RequestDTO;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
@@ -48,7 +49,7 @@ public class Service {
         byte[] buffer = new byte[length];
         file.read(buffer);
 
-        System.out.println("buffer:"  + new String(buffer));
+        System.out.println("buffer:" + new String(buffer));
 
         // Close the file
         file.close();
@@ -92,6 +93,7 @@ public class Service {
 
         return "0";
     }
+
     // generate a random UUID
     public static String generateUUID() {
         String uuid = UUID.randomUUID().toString();
@@ -101,4 +103,18 @@ public class Service {
 
         return UUID.randomUUID().toString();
     }
+
+
+    // return file last modified time
+    public static String getLastModifiedTime(RequestDTO dto) {
+        // print current working directory
+        System.out.println("Current working directory: " + System.getProperty("user.dir"));
+
+        String filePath = dto.getContent();
+        File file = new File("./server/storage" + filePath);
+        long lastModified = file.lastModified();
+        return String.valueOf(lastModified);
+    }
+
+
 }
