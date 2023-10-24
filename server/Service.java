@@ -104,6 +104,69 @@ public class Service {
         return UUID.randomUUID().toString();
     }
 
+    //copy file service
+    public static String copyFile(RequestDTO dto) throws IOException {
+        // get offset
+        int offset = dto.getOffset();
+
+        // get length, if length is 0 or null, throw exception
+        int length = dto.getLength();
+        if (length == 0) {
+            return "1";
+        }
+
+        // get uuid
+        String uuid = dto.getUuid();
+
+        // check if uuid is whitelisted or exist in uuidList
+        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
+            return "1";
+        }
+
+        try {
+            String content = dto.getContent();
+
+            // split content into 2 parts by "|"
+            String[] splitContent = content.split("\\|");
+
+            // part 1: source file path
+            String sourceFilePath = splitContent[0];
+
+            // part 2: destination file path
+            String destinationFilePath = splitContent[1];
+
+            // open source file in rw
+            RandomAccessFile sourceFile = new RandomAccessFile("./server/storage" + sourceFilePath, "rw");
+
+            // open destination file in rw
+            RandomAccessFile destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
+
+            // seek to offset
+            sourceFile.seek(offset);
+
+            // read source file content
+            byte[] buffer = new byte[length];
+            sourceFile.read(buffer);
+
+            // write to destination file
+            destinationFile.write(buffer);
+
+            // close files
+            sourceFile.close();
+            destinationFile.close();
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+            return "1";
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            return "1";
+        }
+
+        return "0";
+    }
+
 
     // return file last modified time
     public static String getLastModifiedTime(RequestDTO dto) {

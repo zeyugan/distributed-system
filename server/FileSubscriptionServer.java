@@ -79,6 +79,10 @@ public class FileSubscriptionServer {
                             // get last modified time
                             response = Service.getLastModifiedTime(requestDTO);
                             break;
+                        case 'C':
+                            // copy content service
+                            response = Service.copyFile(requestDTO);
+                            break;
                         default:
                             response = "Invalid operation";
                     }
