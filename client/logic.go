@@ -168,8 +168,68 @@ func insertContent(socket *net.UDPConn, reqType string) {
 
 	fmt.Println()
 	fmt.Println("Server resp:", respMsg)
-	fmt.Scanln()
 	fmt.Printf("Please press enter to continue...")
+	fmt.Scanln()
+}
+
+// in order to test idempotent, this func will send 2 same insert message to server
+func testIdempotentInsert(socket *net.UDPConn, reqType string) {
+	uuid := defaultUUID
+	filePath := ""
+	offset := 0
+	insertion := ""
+
+	fmt.Println()
+	fmt.Println("[You are testing idempotent insert]")
+	fmt.Println("[In this case, client will send 2 same insert message to server]")
+
+	// use uuid to identify req in order to make sure idempotence
+	if reqType == "idempotence" {
+		uuid = getUUID(socket)
+		fmt.Println("You are using idempotent type, UUID for this request is:", uuid)
+	}
+
+	fmt.Printf("File path: ")
+	fmt.Scanln(&filePath)
+	fmt.Printf("Offset: ")
+	fmt.Scanln(&offset)
+	fmt.Printf("Insertion: ")
+	fmt.Scanln(&insertion)
+
+	for i := 1; i <= 2; i++ {
+		_, respMsg := request(socket, &Request{
+			operation: 'W',
+			uuid:      uuid,
+			offset:    int32(offset),
+			length:    0,
+			content:   filePath + "|" + insertion,
+		})
+
+		fmt.Println()
+		fmt.Println("Server resp", i, ":", respMsg)
+	}
+
+	fmt.Printf("Please press enter to continue...")
+	fmt.Scanln()
+}
+
+// get last modified time
+func getLastModifiedTime(socket *net.UDPConn) {
+
+	filePath := ""
+
+	fmt.Println()
+	fmt.Println("[You are getting last modified time of a file]")
+	fmt.Printf("File path: ")
+	fmt.Scanln(&filePath)
+
+	lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath), 0)
+
+	fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
+	fmt.Println()
+
+	fmt.Printf("Please press enter to continue...")
+	fmt.Scanln()
 }
 
 // register(subscribe) to a file's update from server
@@ -204,8 +264,8 @@ func register(socket *net.UDPConn) {
 			fmt.Println("* Time's up, monioring ends")
 			// cancel ReadDeadline
 			socket.SetReadDeadline(time.Time{})
-			fmt.Scanln()
 			fmt.Printf("Please press enter to continue...")
+			fmt.Scanln()
 			return
 		default:
 			socket.SetReadDeadline(deadline)
