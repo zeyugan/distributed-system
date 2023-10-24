@@ -67,7 +67,7 @@ public class Service {
         String uuid = dto.getUuid();
 
         // check if uuid is whitelisted or exist in uuidList
-        if (!uuid.equals(whitelisted) || !uuidList.contains(uuid)) {
+        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
             return "1";
         }
 
@@ -122,7 +122,7 @@ public class Service {
         String uuid = dto.getUuid();
 
         // check if uuid is whitelisted or exist in uuidList
-        if (!uuid.equals(whitelisted) || !uuidList.contains(uuid)) {
+        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
             return "1";
         }
 
@@ -148,15 +148,13 @@ public class Service {
             try {
                 // open destination file in rw
                 destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 // if destination file does not exist, try to create a new file
                 File file = new File("./server/storage" + destinationFilePath);
                 if (file.createNewFile()) {
                     System.out.println("File created: " + file.getName());
                     destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
-                }
-                else {
+                } else {
                     System.out.println("Error creating file.");
                     return "1";
                 }
@@ -176,12 +174,10 @@ public class Service {
             // close files
             sourceFile.close();
             destinationFile.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
             return "1";
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "1";
         }
