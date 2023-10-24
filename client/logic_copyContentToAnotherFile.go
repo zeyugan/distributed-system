@@ -31,13 +31,21 @@ func copyContentToAnotherFile(socket *net.UDPConn, reqType string) {
 	fmt.Printf("Target file path: ")
 	fmt.Scanln(&targetFilePath)
 
-	_, respMsg := request(socket, &Request{
+	respCode, respMsg := request(socket, &Request{
 		operation: 'C',
 		uuid:      uuid,
 		offset:    int32(offset),
 		length:    int32(copyLength),
 		content:   sourceFilePath + "|" + targetFilePath,
 	})
+
+	if respCode != 0 {
+		fmt.Println("File is not exist")
+		fmt.Println()
+		fmt.Printf("Please press enter to continue...")
+		fmt.Scanln()
+		return
+	}
 
 	fmt.Println()
 	fmt.Println("Server resp:", respMsg)
