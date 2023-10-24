@@ -54,11 +54,12 @@ public class FileSubscriptionServer {
                         case 'W':
                             //write file
                             response = Service.writeFile(requestDTO);
+                            checkAndProcessForFileSubscription(requestDTO.getContent().split("\\|")[0],requestDTO.getContent().substring(requestDTO.getContent().split("\\|")[0].length()+1));
                             break;
                         case 'S':
                             // subscribe to file
                             String filename = requestDTO.getContent();
-                            int duration = requestDTO.getOffset();
+                            int duration = requestDTO.getLength();
 
                             InetAddress address = receivePacket.getAddress();
                             int port = receivePacket.getPort();
@@ -132,7 +133,7 @@ public class FileSubscriptionServer {
                     } else {
                         //process to send any file updates to the subscribed client
                         DatagramPacket sendPacket = new DatagramPacket(receiveData, receiveData.length);
-                        sendPacket.setAddress(InetAddress.getByName(entry.getKey().split(":")[0]));
+                        sendPacket.setAddress(InetAddress.getByName(entry.getKey().split(":")[0].substring(1)));
                         sendPacket.setPort(Integer.parseInt(entry.getKey().split(":")[1]));
                         byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, updatedContent);
                         sendMessagesToClient(responseBytes, sendPacket);
