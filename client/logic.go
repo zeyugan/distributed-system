@@ -255,6 +255,10 @@ func register(socket *net.UDPConn) {
 
 	if respCode != 0 {
 		fmt.Println(respMsg)
+		fmt.Println()
+		fmt.Printf("Please press enter to continue...")
+		fmt.Scanln()
+		return
 	}
 
 	timeout := time.After(time.Duration(monitorInterval) * time.Second)
