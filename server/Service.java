@@ -67,9 +67,12 @@ public class Service {
         String uuid = dto.getUuid();
 
         // check if uuid is whitelisted or exist in uuidList
-        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
+        if (!uuid.equals(whitelisted) || !uuidList.contains(uuid)) {
             return "1";
         }
+
+        // remove uuid from uuidList
+        uuidList.remove(uuid);
 
         try {
             String content = dto.getContent();
@@ -119,9 +122,12 @@ public class Service {
         String uuid = dto.getUuid();
 
         // check if uuid is whitelisted or exist in uuidList
-        if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
+        if (!uuid.equals(whitelisted) || !uuidList.contains(uuid)) {
             return "1";
         }
+
+        // remove uuid from uuidList
+        uuidList.remove(uuid);
 
         try {
             String content = dto.getContent();
