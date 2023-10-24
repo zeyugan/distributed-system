@@ -4,7 +4,10 @@ import server.common.CommonService;
 import server.dto.FileSubscriptionDTO;
 import server.dto.RequestDTO;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,22 +57,29 @@ public class FileSubscriptionServer {
                         case 'W':
                             //write file
                             response = Service.writeFile(requestDTO);
-                            checkAndProcessForFileSubscription(requestDTO.getContent().split("\\|")[0],requestDTO.getContent().substring(requestDTO.getContent().split("\\|")[0].length()+1));
+                            checkAndProcessForFileSubscription(requestDTO.getContent().split("\\|")[0], requestDTO.getContent().substring(requestDTO.getContent().split("\\|")[0].length() + 1));
                             break;
                         case 'S':
                             // subscribe to file
-                            String filename = requestDTO.getContent();
-                            int duration = requestDTO.getLength();
+                            boolean fileExist = checkFileExist(requestDTO.getContent());
+                            if(fileExist){
+                                String filename = requestDTO.getContent();
+                                int duration = requestDTO.getLength();
 
-                            InetAddress address = receivePacket.getAddress();
-                            int port = receivePacket.getPort();
-
-                            if (subscriptions.containsKey(address + ":" + port)) {
-                                response = "There is an existing subscription for your specified file.";
-                            } else {
+                                InetAddress address = receivePacket.getAddress();
+                                int port = receivePacket.getPort();
                                 FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
-                                subscriptions.put(address + ":" + port, fileSubscriptionDTO);
+                                checkExpiredFileSubscription();
+                                if (subscriptions.containsKey(address + ":" + port)) {
+                                    subscriptions.get(address + ":" + port).setDuration(fileSubscriptionDTO.getDuration());
+                                    subscriptions.get(address + ":" + port).setFileName(fileSubscriptionDTO.getFileName());
+                                    subscriptions.get(address + ":" + port).setRegisterTimeStamp(fileSubscriptionDTO.getRegisterTimeStamp());
+                                } else {
+                                    subscriptions.put(address + ":" + port, fileSubscriptionDTO);
+                                }
                                 response = "You are now registered for updates for " + duration + " minutes.";
+                            } else{
+                                response = "File does not exist";
                             }
                             break;
                         case 'I':
@@ -113,6 +123,15 @@ public class FileSubscriptionServer {
 
     }
 
+    private static boolean checkFileExist(String content)  {
+        boolean isExist = false;
+        File file = new File("./server/storage" + content);
+        if(file.exists()){
+            isExist = true;
+        }
+        return isExist;
+    }
+
     //For file content update, check subscription map to see whether there is any existing subscription for this file
     //and send the updated content to the client
     private static void checkAndProcessForFileSubscription(String filename, String updatedContent) {
@@ -141,10 +160,29 @@ public class FileSubscriptionServer {
                 } catch (ParseException | UnknownHostException e) {
                     throw new RuntimeException(e);
                 }
-
             }
-
         }
+    }
+
+    private static void checkExpiredFileSubscription() {
+        Iterator<Map.Entry<String, FileSubscriptionDTO>> iterator = subscriptions.entrySet().iterator();
+
+        // Iterate and remove items based on a condition
+        try {
+            while (iterator.hasNext()) {
+                Map.Entry<String, FileSubscriptionDTO> entry = iterator.next();
+                Date dateObject = dateFormat.parse(entry.getValue().getRegisterTimeStamp());
+                long subscriptionEndTimeInMilliSeconds = dateObject.getTime() + entry.getValue().getDuration();
+                long currentMillis = System.currentTimeMillis();
+                if (subscriptionEndTimeInMilliSeconds < currentMillis) {
+                    //process to remove the subscription from subscriptions hashmap
+                    iterator.remove();
+                }
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     private static FileSubscriptionDTO populateFileSubscriptionDTO(InetAddress address, int port, String filename, long duration) {
