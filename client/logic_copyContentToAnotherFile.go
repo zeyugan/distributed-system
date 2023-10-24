@@ -11,7 +11,7 @@ func copyContentToAnotherFile(socket *net.UDPConn, reqType string) {
 	sourceFilePath := ""
 	offset := 0
 	copyLength := 0
-	objectFilePath := ""
+	targetFilePath := ""
 
 	fmt.Println()
 	fmt.Println("[You are copying content to another file]")
@@ -28,15 +28,15 @@ func copyContentToAnotherFile(socket *net.UDPConn, reqType string) {
 	fmt.Scanln(&offset)
 	fmt.Printf("Copy length: ")
 	fmt.Scanln(&copyLength)
-	fmt.Printf("Object file path: ")
-	fmt.Scanln(&objectFilePath)
+	fmt.Printf("Target file path: ")
+	fmt.Scanln(&targetFilePath)
 
 	_, respMsg := request(socket, &Request{
 		operation: 'C',
 		uuid:      uuid,
 		offset:    int32(offset),
 		length:    int32(copyLength),
-		content:   sourceFilePath,
+		content:   sourceFilePath + "|" + targetFilePath,
 	})
 
 	fmt.Println()
