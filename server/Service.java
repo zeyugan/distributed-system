@@ -104,7 +104,7 @@ public class Service {
         // add to list
         uuidList.add(uuid);
 
-        return UUID.randomUUID().toString();
+        return uuid;
     }
 
     //copy file service
