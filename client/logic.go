@@ -223,11 +223,11 @@ func getLastModifiedTime(socket *net.UDPConn) {
 	fmt.Printf("File path: ")
 	fmt.Scanln(&filePath)
 
-	// lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath), 0)
-	lastModifiedTime := getServerModifiedTime(socket, filePath)
+	lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath)/1000, 0)
+	// lastModifiedTime := getServerModifiedTime(socket, filePath)
 
-	fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime)
-	// fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
+	// fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime)
+	fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
 	fmt.Println()
 
 	fmt.Printf("Please press enter to continue...")
