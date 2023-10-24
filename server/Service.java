@@ -77,8 +77,8 @@ public class Service {
         try {
             String content = dto.getContent();
 
-            // split filepath and write content by symbol "|"
-            String[] splitContent = content.split("\\|");
+            // split filepath and write content by symbol "|". split only once
+            String[] splitContent = content.split("\\|",2);
             String filePath = splitContent[0];
             String fileContent = splitContent[1];
 
@@ -132,8 +132,8 @@ public class Service {
         try {
             String content = dto.getContent();
 
-            // split content into 2 parts by "|"
-            String[] splitContent = content.split("\\|");
+            // split content into 2 parts by "|". split only once
+            String[] splitContent = content.split("\\|", 2);
 
             // part 1: source file path
             String sourceFilePath = splitContent[0];
