@@ -122,7 +122,7 @@ public class FileSubscriptionServer {
 
     private static void checkFileExist(String content) throws IOException {
         File file = new File("./server/storage" + content);
-        if(file.exists()){
+        if(!file.exists()){
             throw new IOException();
         }
     }
