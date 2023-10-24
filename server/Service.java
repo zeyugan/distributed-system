@@ -194,5 +194,14 @@ public class Service {
         return String.valueOf(lastModified);
     }
 
+    public static void checkFileExist(String content) throws IOException {
+        File file = new File("./server/storage" + content);
+        if(!file.exists()){
+            throw new IOException();
+        }
+    }
+
+
+
 
 }

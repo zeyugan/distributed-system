@@ -61,23 +61,8 @@ public class FileSubscriptionServer {
                             break;
                         case 'S':
                             // subscribe to file
-                            checkFileExist(requestDTO.getContent());
-                            String filename = requestDTO.getContent();
-                            int duration = requestDTO.getLength();
-
-                            InetAddress address = receivePacket.getAddress();
-                            int port = receivePacket.getPort();
-                            FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
-                            checkExpiredFileSubscription();
-                            if (subscriptions.containsKey(address + ":" + port)) {
-                                subscriptions.get(address + ":" + port).setDuration(fileSubscriptionDTO.getDuration());
-                                subscriptions.get(address + ":" + port).setFileName(fileSubscriptionDTO.getFileName());
-                                subscriptions.get(address + ":" + port).setRegisterTimeStamp(fileSubscriptionDTO.getRegisterTimeStamp());
-                            } else {
-                                subscriptions.put(address + ":" + port, fileSubscriptionDTO);
-                            }
-                            response = "You are now registered for updates for " + duration + " minutes.";
-
+                            Service.checkFileExist(requestDTO.getContent());
+                            response = processForFileSubcription(receivePacket,requestDTO);
                             break;
                         case 'I':
                             // request UUID
@@ -120,12 +105,24 @@ public class FileSubscriptionServer {
 
     }
 
-    private static void checkFileExist(String content) throws IOException {
-        File file = new File("./server/storage" + content);
-        if(!file.exists()){
-            throw new IOException();
+    private static String processForFileSubcription(DatagramPacket receivePacket,RequestDTO requestDTO) {
+        String filename = requestDTO.getContent();
+        int duration = requestDTO.getLength();
+
+        InetAddress address = receivePacket.getAddress();
+        int port = receivePacket.getPort();
+        FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
+        checkExpiredFileSubscription();
+        if (subscriptions.containsKey(address + ":" + port)) {
+            subscriptions.get(address + ":" + port).setDuration(fileSubscriptionDTO.getDuration());
+            subscriptions.get(address + ":" + port).setFileName(fileSubscriptionDTO.getFileName());
+            subscriptions.get(address + ":" + port).setRegisterTimeStamp(fileSubscriptionDTO.getRegisterTimeStamp());
+        } else {
+            subscriptions.put(address + ":" + port, fileSubscriptionDTO);
         }
+        return  "You are now registered for updates for " + duration + " minutes.";
     }
+
 
     //For file content update, check subscription map to see whether there is any existing subscription for this file
     //and send the updated content to the client
@@ -177,7 +174,6 @@ public class FileSubscriptionServer {
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
-
     }
 
     private static FileSubscriptionDTO populateFileSubscriptionDTO(InetAddress address, int port, String filename, long duration) {
