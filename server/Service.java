@@ -138,8 +138,23 @@ public class Service {
             // open source file in rw
             RandomAccessFile sourceFile = new RandomAccessFile("./server/storage" + sourceFilePath, "rw");
 
-            // open destination file in rw
-            RandomAccessFile destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
+            RandomAccessFile destinationFile = null;
+            try {
+                // open destination file in rw
+                destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
+            }
+            catch (IOException e) {
+                // if destination file does not exist, try to create a new file
+                File file = new File("./server/storage" + destinationFilePath);
+                if (file.createNewFile()) {
+                    System.out.println("File created: " + file.getName());
+                    destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
+                }
+                else {
+                    System.out.println("Error creating file.");
+                    return "1";
+                }
+            }
 
             // seek to offset
             sourceFile.seek(offset);
@@ -148,7 +163,8 @@ public class Service {
             byte[] buffer = new byte[length];
             sourceFile.read(buffer);
 
-            // write to destination file
+            // append to the end of destination file
+            destinationFile.seek(destinationFile.length());
             destinationFile.write(buffer);
 
             // close files
