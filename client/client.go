@@ -53,6 +53,9 @@ interfaceLoop:
 		fmt.Println("- 1 Read content")
 		fmt.Println("- 2 Insert content")
 		fmt.Println("- 3 Register to file")
+		fmt.Println("- 4 Test idempotent insert")
+		fmt.Println("- 5 Get file last modified time")
+		fmt.Println("- 6 Copy content to another file")
 		fmt.Println("- 0 Exit")
 		fmt.Println("")
 		fmt.Printf("Your option: ")
@@ -66,6 +69,12 @@ interfaceLoop:
 			insertContent(socket, reqType)
 		case "3":
 			register(socket)
+		case "4":
+			testIdempotentInsert(socket, reqType)
+		case "5":
+			getLastModifiedTime(socket)
+		case "6":
+			copyContentToAnotherFile(socket, reqType)
 		case "0":
 			break interfaceLoop
 		default:
