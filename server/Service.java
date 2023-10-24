@@ -68,7 +68,7 @@ public class Service {
 
         // check if uuid is whitelisted or exist in uuidList
         if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
-            return "1";
+            return "UUID is invalid";
         }
 
         // remove uuid from uuidList
@@ -91,7 +91,7 @@ public class Service {
             file.close();
         } catch (Exception e) {
             e.printStackTrace();
-            return "1";
+            return e.getMessage();
         }
 
         return "0";
@@ -115,7 +115,7 @@ public class Service {
         // get length, if length is 0 or null, throw exception
         int length = dto.getLength();
         if (length == 0) {
-            return "1";
+            return "requested length is 0";
         }
 
         // get uuid
@@ -123,7 +123,7 @@ public class Service {
 
         // check if uuid is whitelisted or exist in uuidList
         if (!uuid.equals(whitelisted) && !uuidList.contains(uuid)) {
-            return "1";
+            return "UUID is invalid";
         }
 
         // remove uuid from uuidList
@@ -156,7 +156,7 @@ public class Service {
                     destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
                 } else {
                     System.out.println("Error creating file.");
-                    return "1";
+                    return "Error creating file";
                 }
             }
 
@@ -174,12 +174,9 @@ public class Service {
             // close files
             sourceFile.close();
             destinationFile.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return "1";
         } catch (Exception e) {
             e.printStackTrace();
-            return "1";
+            return e.getMessage();
         }
 
         return "0";
