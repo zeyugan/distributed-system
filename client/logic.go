@@ -246,7 +246,7 @@ func getLastModifiedTime(socket *net.UDPConn) {
 		fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
 		fmt.Println()
 	} else {
-		fmt.Println("")
+		fmt.Println("The file does not exist")
 	}
 
 	fmt.Printf("Please press enter to continue...")
