@@ -239,12 +239,15 @@ func getLastModifiedTime(socket *net.UDPConn) {
 	fmt.Printf("File path: ")
 	fmt.Scanln(&filePath)
 
-	lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath)/1000, 0)
-	// lastModifiedTime := getServerModifiedTime(socket, filePath)
+	lastModifiedTimeInt := getServerModifiedTime(socket, filePath)
 
-	// fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime)
-	fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
-	fmt.Println()
+	if lastModifiedTimeInt != 0 {
+		lastModifiedTime := time.Unix(lastModifiedTimeInt/1000, 0)
+		fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
+		fmt.Println()
+	} else {
+		fmt.Println("The file does not exist")
+	}
 
 	fmt.Printf("Please press enter to continue...")
 	fmt.Scanln()
@@ -294,7 +297,7 @@ func register(socket *net.UDPConn) {
 			_, respMsg := recv(socket)
 			if respMsg != "" {
 				fileUpdateMsg := respMsg
-				fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
+				fmt.Println("The file you subscribe has an updated:", fileUpdateMsg)
 			}
 		}
 	}
