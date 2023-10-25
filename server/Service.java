@@ -82,6 +82,9 @@ public class Service {
             String filePath = splitContent[0];
             String fileContent = splitContent[1];
 
+            // check if file exists
+            checkFileExist(filePath);
+
             // open in rw
             RandomAccessFile file = new RandomAccessFile("./server/storage" + filePath, "rw");
 
@@ -159,11 +162,18 @@ public class Service {
             // part 2: destination file path
             String destinationFilePath = splitContent[1];
 
+            // check source file exists
+            checkFileExist(sourceFilePath);
+
+
             // open source file in rw
             RandomAccessFile sourceFile = new RandomAccessFile("./server/storage" + sourceFilePath, "rw");
 
+
             RandomAccessFile destinationFile = null;
             try {
+                // check destination file exists
+                checkFileExist(destinationFilePath);
                 // open destination file in rw
                 destinationFile = new RandomAccessFile("./server/storage" + destinationFilePath, "rw");
             } catch (IOException e) {
