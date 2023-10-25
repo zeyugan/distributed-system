@@ -84,11 +84,29 @@ public class Service {
 
             // open in rw
             RandomAccessFile file = new RandomAccessFile("./server/storage" + filePath, "rw");
-            file.seek(offset);
-            file.write(fileContent.getBytes());
 
-            // close file
-            file.close();
+            // if offset is larger than file length, append to the end of file
+            if (offset > file.length()) {
+                file.seek(file.length());
+                file.write(fileContent.getBytes());
+            }
+            // else insert at offset and push remaining content back
+            else {
+                // read remaining content
+                file.seek(offset);
+                byte[] remainingContent = new byte[(int) (file.length() - offset)];
+                file.read(remainingContent);
+
+                // write content at offset
+                file.seek(offset);
+                file.write(fileContent.getBytes());
+
+                // append remaining content
+                file.seek(offset + fileContent.getBytes().length);
+                file.write(remainingContent);
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
