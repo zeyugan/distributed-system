@@ -74,16 +74,17 @@ public class Service {
         // remove uuid from uuidList
         uuidList.remove(uuid);
 
+        String content = dto.getContent();
+
+        // split filepath and write content by symbol "|". split only once
+        String[] splitContent = content.split("\\|",2);
+        String filePath = splitContent[0];
+        String fileContent = splitContent[1];
+
+        // check if file exists
+        checkFileExist(filePath);
+
         try {
-            String content = dto.getContent();
-
-            // split filepath and write content by symbol "|". split only once
-            String[] splitContent = content.split("\\|",2);
-            String filePath = splitContent[0];
-            String fileContent = splitContent[1];
-
-            // check if file exists
-            checkFileExist(filePath);
 
             // open in rw
             RandomAccessFile file = new RandomAccessFile("./server/storage" + filePath, "rw");
@@ -150,20 +151,22 @@ public class Service {
         // remove uuid from uuidList
         uuidList.remove(uuid);
 
+        String content = dto.getContent();
+
+        // split content into 2 parts by "|". split only once
+        String[] splitContent = content.split("\\|", 2);
+
+        // part 1: source file path
+        String sourceFilePath = splitContent[0];
+
+        // part 2: destination file path
+        String destinationFilePath = splitContent[1];
+
+        // check source file exists
+        checkFileExist(sourceFilePath);
+
+
         try {
-            String content = dto.getContent();
-
-            // split content into 2 parts by "|". split only once
-            String[] splitContent = content.split("\\|", 2);
-
-            // part 1: source file path
-            String sourceFilePath = splitContent[0];
-
-            // part 2: destination file path
-            String destinationFilePath = splitContent[1];
-
-            // check source file exists
-            checkFileExist(sourceFilePath);
 
 
             // open source file in rw
