@@ -4,7 +4,10 @@ import server.common.CommonService;
 import server.dto.FileSubscriptionDTO;
 import server.dto.RequestDTO;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.net.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -54,22 +57,12 @@ public class FileSubscriptionServer {
                         case 'W':
                             //write file
                             response = Service.writeFile(requestDTO);
+                            checkAndProcessForFileSubscription(requestDTO.getContent().split("\\|")[0], requestDTO.getContent().substring(requestDTO.getContent().split("\\|")[0].length() + 1));
                             break;
                         case 'S':
                             // subscribe to file
-                            String filename = requestDTO.getContent();
-                            int duration = requestDTO.getOffset();
-
-                            InetAddress address = receivePacket.getAddress();
-                            int port = receivePacket.getPort();
-
-                            if (subscriptions.containsKey(address + ":" + port)) {
-                                response = "There is an existing subscription for your specified file.";
-                            } else {
-                                FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
-                                subscriptions.put(address + ":" + port, fileSubscriptionDTO);
-                                response = "You are now registered for updates for " + duration + " minutes.";
-                            }
+                            Service.checkFileExist(requestDTO.getContent());
+                            response = processForFileSubcription(receivePacket,requestDTO);
                             break;
                         case 'I':
                             // request UUID
@@ -112,6 +105,25 @@ public class FileSubscriptionServer {
 
     }
 
+    private static String processForFileSubcription(DatagramPacket receivePacket,RequestDTO requestDTO) {
+        String filename = requestDTO.getContent();
+        int duration = requestDTO.getLength();
+
+        InetAddress address = receivePacket.getAddress();
+        int port = receivePacket.getPort();
+        FileSubscriptionDTO fileSubscriptionDTO = populateFileSubscriptionDTO(address, port, filename, duration);
+        checkExpiredFileSubscription();
+        if (subscriptions.containsKey(address + ":" + port)) {
+            subscriptions.get(address + ":" + port).setDuration(fileSubscriptionDTO.getDuration());
+            subscriptions.get(address + ":" + port).setFileName(fileSubscriptionDTO.getFileName());
+            subscriptions.get(address + ":" + port).setRegisterTimeStamp(fileSubscriptionDTO.getRegisterTimeStamp());
+        } else {
+            subscriptions.put(address + ":" + port, fileSubscriptionDTO);
+        }
+        return  "You are now registered for updates for " + duration + " minutes.";
+    }
+
+
     //For file content update, check subscription map to see whether there is any existing subscription for this file
     //and send the updated content to the client
     private static void checkAndProcessForFileSubscription(String filename, String updatedContent) {
@@ -132,7 +144,7 @@ public class FileSubscriptionServer {
                     } else {
                         //process to send any file updates to the subscribed client
                         DatagramPacket sendPacket = new DatagramPacket(receiveData, receiveData.length);
-                        sendPacket.setAddress(InetAddress.getByName(entry.getKey().split(":")[0]));
+                        sendPacket.setAddress(InetAddress.getByName(entry.getKey().split(":")[0].substring(1)));
                         sendPacket.setPort(Integer.parseInt(entry.getKey().split(":")[1]));
                         byte[] responseBytes = CommonService.populateResponseBytesWithResponseCode(2, updatedContent);
                         sendMessagesToClient(responseBytes, sendPacket);
@@ -140,9 +152,27 @@ public class FileSubscriptionServer {
                 } catch (ParseException | UnknownHostException e) {
                     throw new RuntimeException(e);
                 }
-
             }
+        }
+    }
 
+    private static void checkExpiredFileSubscription() {
+        Iterator<Map.Entry<String, FileSubscriptionDTO>> iterator = subscriptions.entrySet().iterator();
+
+        // Iterate and remove items based on a condition
+        try {
+            while (iterator.hasNext()) {
+                Map.Entry<String, FileSubscriptionDTO> entry = iterator.next();
+                Date dateObject = dateFormat.parse(entry.getValue().getRegisterTimeStamp());
+                long subscriptionEndTimeInMilliSeconds = dateObject.getTime() + entry.getValue().getDuration();
+                long currentMillis = System.currentTimeMillis();
+                if (subscriptionEndTimeInMilliSeconds < currentMillis) {
+                    //process to remove the subscription from subscriptions hashmap
+                    iterator.remove();
+                }
+            }
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
         }
     }
 

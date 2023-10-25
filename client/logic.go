@@ -53,8 +53,8 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 		if respCode != 0 {
 			fmt.Println()
 			fmt.Printf("File %v doesn't exist\n", content)
-			fmt.Scanln()
 			fmt.Printf("Please press enter to continue...")
+			fmt.Scanln()
 			return
 
 		} else {
@@ -223,8 +223,10 @@ func getLastModifiedTime(socket *net.UDPConn) {
 	fmt.Printf("File path: ")
 	fmt.Scanln(&filePath)
 
-	lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath), 0)
+	lastModifiedTime := time.Unix(getServerModifiedTime(socket, filePath)/1000, 0)
+	// lastModifiedTime := getServerModifiedTime(socket, filePath)
 
+	// fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime)
 	fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
 	fmt.Println()
 
@@ -243,7 +245,7 @@ func register(socket *net.UDPConn) {
 	fmt.Printf("Monitor interval (s): ")
 	fmt.Scanln(&monitorInterval)
 
-	respCode, respMsg := request(socket, &Request{
+	respCode, _ := request(socket, &Request{
 		operation: 'S',
 		uuid:      defaultUUID,
 		offset:    0,
@@ -252,7 +254,11 @@ func register(socket *net.UDPConn) {
 	})
 
 	if respCode != 0 {
-		fmt.Println(respMsg)
+		fmt.Println("File is not exist")
+		fmt.Println()
+		fmt.Printf("Please press enter to continue...")
+		fmt.Scanln()
+		return
 	}
 
 	timeout := time.After(time.Duration(monitorInterval) * time.Second)
