@@ -30,36 +30,6 @@ client-server communication is carried out using UDP.
 - design request and response format
 -
 
-# milestones
-
-**DEADLINE October 23, 2023 (Monday)**
-
-## stage 1: MVP 01/10/2023
-
-- [x] Client to Server local connectivity (JW)
-- [x] Implement Service 1 with external library (ZY)
-- [x] Implement Service 2 with external library (ZY)
-- [x] Implement Service 3 with external library (JW)
-- [x] Implement client call to service 1 (ZH)
-- [x] Implement client call to service 2 (ZH)
-- [x] Implement client call to service 3 (ZH)
-- [x] Implement client side cache (ZH)
-
-## stage 2: Implementation 08/10/2023
-
-- [x] Implement Service 1 without external library
-- [x] Implement Service 2 without external library
-- [ ] Implement Service 3 without external library
-- [ ] Implement UUID generation
-- [ ] Write service check UUID
-- [x] Write service check cache
-- [ ] Finalize request and response format
-- [ ] Implement at-least-once semantics
-- [ ] Implement at-most-once semantics
-- [ ] Client to Server remote connectivity
-
-## stage 3: Final Product 15/10/2023
-
 
 # design
 
