@@ -294,7 +294,7 @@ func register(socket *net.UDPConn) {
 			_, respMsg := recv(socket)
 			if respMsg != "" {
 				fileUpdateMsg := respMsg
-				fmt.Println("The file you subscribe is updated to :", fileUpdateMsg)
+				fmt.Println("The file you subscribe has an updated:", fileUpdateMsg)
 			}
 		}
 	}
