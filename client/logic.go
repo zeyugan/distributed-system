@@ -158,13 +158,21 @@ func insertContent(socket *net.UDPConn, reqType string) {
 	fmt.Printf("Insertion: ")
 	fmt.Scanln(&insertion)
 
-	_, respMsg := request(socket, &Request{
+	respCode, respMsg := request(socket, &Request{
 		operation: 'W',
 		uuid:      uuid,
 		offset:    int32(offset),
 		length:    0,
 		content:   filePath + "|" + insertion,
 	})
+
+	if respCode != 0 {
+		fmt.Println("File is not exist")
+		fmt.Println()
+		fmt.Printf("Please press enter to continue...")
+		fmt.Scanln()
+		return
+	}
 
 	fmt.Println()
 	fmt.Println("Server resp:", respMsg)
@@ -197,13 +205,21 @@ func testIdempotentInsert(socket *net.UDPConn, reqType string) {
 	fmt.Scanln(&insertion)
 
 	for i := 1; i <= 2; i++ {
-		_, respMsg := request(socket, &Request{
+		respCode, respMsg := request(socket, &Request{
 			operation: 'W',
 			uuid:      uuid,
 			offset:    int32(offset),
 			length:    0,
 			content:   filePath + "|" + insertion,
 		})
+
+		if respCode != 0 && i == 1 {
+			fmt.Println("File is not exist")
+			fmt.Println()
+			fmt.Printf("Please press enter to continue...")
+			fmt.Scanln()
+			return
+		}
 
 		fmt.Println()
 		fmt.Println("Server resp", i, ":", respMsg)
