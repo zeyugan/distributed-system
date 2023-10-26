@@ -52,7 +52,7 @@ func readContent(socket *net.UDPConn, cache map[string]CacheStruct, freshnessInt
 		// check file existance
 		if respCode != 0 {
 			fmt.Println()
-			fmt.Printf("File %v doesn't exist\n", content)
+			fmt.Printf("File %v doesn't exist or parameters is invalid\n", content)
 			fmt.Printf("Please press enter to continue...")
 			fmt.Scanln()
 			return
@@ -246,7 +246,7 @@ func getLastModifiedTime(socket *net.UDPConn) {
 		fmt.Println("The last modified time of file: ", filePath, " is ", lastModifiedTime.Format("2006-01-02 15:04:05"))
 		fmt.Println()
 	} else {
-		fmt.Println("The file does not exist")
+		fmt.Println("\nThe file does not exist\n")
 	}
 
 	fmt.Printf("Please press enter to continue...")

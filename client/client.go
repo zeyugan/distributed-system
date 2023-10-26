@@ -7,14 +7,15 @@ import (
 )
 
 // global var
-var debug = true
+var debug = false
 var defaultUUID = "000000000000000000000000000000000000"
 
 func main() {
 	// default config
 	reqType := "idempotence"
 	freshnessInterval := 30 // s
-	serverIP := "127.0.0.1"
+	// serverIP := "127.0.0.1"
+	serverIP := "172.20.10.3"
 	serverPort := 6666
 
 	// client local cache
